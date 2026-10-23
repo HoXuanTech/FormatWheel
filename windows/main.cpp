@@ -16,6 +16,7 @@
 #include <cwchar>
 #include <exception>
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <thread>
 #include <vector>
@@ -114,10 +115,11 @@ void paint(HWND hwnd) {
         const double a = -pi / 2 + i * pi / 4;
         const int x = center_x + static_cast<int>(std::sin(a) * 218);
         const int y = center_y - static_cast<int>(std::cos(a) * 218);
-        SetTextColor(dc, RGB(255, 255, 255));
+        const bool enabled = fw::unavailable_reason(slots[i].id).empty();
+        SetTextColor(dc, enabled ? RGB(255, 255, 255) : RGB(170, 181, 195));
         text(dc, x - 75, y - 22, 150, 30, slots[i].label, true);
-        SetTextColor(dc, RGB(196, 210, 228));
-        text(dc, x - 80, y + 8, 160, 22, slots[i].detail);
+        SetTextColor(dc, enabled ? RGB(196, 210, 228) : RGB(145, 155, 172));
+        text(dc, x - 80, y + 8, 160, 22, enabled ? slots[i].detail : L"尚未可用");
     }
     SetTextColor(dc, RGB(246, 248, 251));
     text(dc, center_x - 125, center_y - 79, 250, 31, std::wstring(fw::kind_label(kind)) + (state.page ? L" · 工具" : L" · 格式轉換"), true);
@@ -153,6 +155,12 @@ void choose_files(HWND hwnd) {
 
 void start_action(HWND hwnd, const std::wstring& id) {
     if (state.busy || state.files.empty()) return;
+    const auto unavailable = fw::unavailable_reason(id);
+    if (!unavailable.empty()) {
+        state.message = unavailable;
+        InvalidateRect(hwnd, nullptr, TRUE);
+        return;
+    }
     state.busy = true;
     state.message = L"正在處理…";
     InvalidateRect(hwnd, nullptr, TRUE);

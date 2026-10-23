@@ -248,6 +248,22 @@ std::wstring ffmpeg(const std::wstring& input, const std::wstring& suffix, const
 
 bool tool_available(const std::wstring& executable) { return !executable_path(executable).empty(); }
 
+std::wstring unavailable_reason(const std::wstring& id) {
+    if (id == L"gen.path" || id == L"gen.name" || id == L"gen.sha") return L"";
+    if (id == L"gen.zip") return tool_available(L"7z.exe") ? L"" : L"尚未安裝 7-Zip";
+    if (id == L"img.to.png" || id == L"img.to.jpg" || id == L"img.to.tiff" ||
+        id == L"img.compress" || id == L"img.half" || id == L"img.mono" ||
+        id == L"img.rotate" || id == L"img.strip") return L"";
+    if (id == L"img.to.webp" || id == L"img.to.avif" || id == L"img.to.gif" || id == L"img.to.heic" ||
+        id.find(L"vid.") == 0 || id.find(L"aud.") == 0)
+        return tool_available(L"ffmpeg.exe") ? L"" : L"尚未安裝 FFmpeg";
+    if (id == L"pdf.to.png" || id == L"pdf.to.jpg") return tool_available(L"pdftoppm.exe") ? L"" : L"尚未安裝 Poppler";
+    if (id == L"pdf.to.txt") return tool_available(L"pdftotext.exe") ? L"" : L"尚未安裝 Poppler";
+    if (id == L"pdf.split") return tool_available(L"pdfseparate.exe") ? L"" : L"尚未安裝 Poppler";
+    if (id == L"pdf.merge") return tool_available(L"pdfunite.exe") ? L"" : L"尚未安裝 Poppler";
+    return L"Windows 版尚未完成這項功能";
+}
+
 Kind kind_of(const std::wstring& path) {
     const auto ext = extension(path);
     if (ext == L"png" || ext == L"jpg" || ext == L"jpeg" || ext == L"bmp" || ext == L"gif" || ext == L"tif" || ext == L"tiff" || ext == L"webp" || ext == L"heic" || ext == L"avif") return Kind::image;

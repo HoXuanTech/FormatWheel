@@ -18,5 +18,6 @@ const wchar_t* kind_label(Kind kind);
 std::vector<Action> actions(Kind kind, int page);
 std::wstring run(const std::wstring& id, const std::vector<std::wstring>& files);
 bool tool_available(const std::wstring& executable);
+std::wstring unavailable_reason(const std::wstring& id);
 
 } // namespace fw
