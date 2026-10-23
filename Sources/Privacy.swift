@@ -19,7 +19,7 @@ enum Privacy {
             if found.level > 0 { flagged += 1 }
             if found.level > worst.level { worst = found }
         }
-        if flagged > 1 { worst.reasons.append("\(flagged) 个文件留有痕迹") }
+        if flagged > 1 { worst.reasons.append("\(flagged) 個檔案留有痕跡") }
         return worst
     }
 
@@ -55,12 +55,12 @@ enum Privacy {
         }
         if exif[kCGImagePropertyExifDateTimeOriginal] != nil {
             found.level += 1
-            found.reasons.append("拍摄时间")
+            found.reasons.append("拍攝時間")
         }
         if nonEmpty(exif[kCGImagePropertyExifBodySerialNumber]) != nil || nonEmpty(exif[kCGImagePropertyExifCameraOwnerName]) != nil
             || nonEmpty(tiff[kCGImagePropertyTIFFArtist]) != nil {
             found.level += 1
-            found.reasons.append("机身序列号 / 作者")
+            found.reasons.append("機身序列號 / 作者")
         }
         return found
     }
@@ -91,7 +91,7 @@ enum Privacy {
         }
         if first([.quickTimeMetadataCreationDate], common: .commonKeyCreationDate) != nil {
             found.level += 1
-            found.reasons.append("拍摄时间")
+            found.reasons.append("拍攝時間")
         }
         return found
     }
@@ -119,7 +119,7 @@ enum Privacy {
         // creation_time exists in almost every file; only a camera capture date counts.
         if tags.keys.contains("com.apple.quicktime.creationdate") {
             found.level += 1
-            found.reasons.append("拍摄时间")
+            found.reasons.append("拍攝時間")
         }
         return found
     }
@@ -133,12 +133,12 @@ enum Privacy {
         }
         if nonEmpty(attributes[PDFDocumentAttribute.creatorAttribute.rawValue]) != nil {
             found.level += 1
-            found.reasons.append("制作软件")
+            found.reasons.append("製作軟體")
         }
         if nonEmpty(attributes[PDFDocumentAttribute.keywordsAttribute.rawValue]) != nil
             || nonEmpty(attributes[PDFDocumentAttribute.subjectAttribute.rawValue]) != nil {
             found.level += 1
-            found.reasons.append("主题 / 关键词")
+            found.reasons.append("主題 / 關鍵詞")
         }
         // Dates are left out on purpose: saving any PDF stamps a fresh one, so they aren't a trail.
         return found
@@ -160,7 +160,7 @@ enum Privacy {
             found.level += 1
             found.reasons.append("公司名")
         }
-        // The creation date is left out: Word rejects a blanked date, so 去隐私 can't clear it.
+        // The creation date is left out: Word rejects a blanked date, so 去隱私 can't clear it.
         return found
     }
 
@@ -175,37 +175,37 @@ enum Privacy {
         return nonEmpty(inner)
     }
 
-    // MARK: - Lying low (去隐私)
+    // MARK: - Lying low (去隱私)
 
-    static let evadedNote = "已甩掉警察：定位、设备和作者信息都抹掉了"
+    static let evadedNote = "已甩掉警察：定位、裝置和作者資訊都抹掉了"
 
     /// Videos: re-wrap without re-encoding and without metadata (location, device, dates).
     static func stripVideo(_ url: URL, progress: @escaping ProgressFn) async throws -> OpResult {
         let ext = url.pathExtension.lowercased()
         if await MediaOps.avVideo(url) {
             let type: AVFileType = ["mp4", "m4v"].contains(ext) ? .mp4 : .mov
-            let out = Out.url(for: url, suffix: "去隐私", ext: type == .mp4 ? "mp4" : "mov")
+            let out = Out.url(for: url, suffix: "去隱私", ext: type == .mp4 ? "mp4" : "mov")
             try await MediaOps.export(AVURLAsset(url: url), preset: AVAssetExportPresetPassthrough, type: type, out: out, progress: progress) { session in
                 session.metadata = []
                 session.metadataItemFilter = .forSharing()
             }
             return OpResult(outputs: [out], note: evadedNote)
         }
-        let out = Out.url(for: url, suffix: "去隐私", ext: ext.isEmpty ? "mp4" : ext)
+        let out = Out.url(for: url, suffix: "去隱私", ext: ext.isEmpty ? "mp4" : ext)
         try await MediaOps.ff(url, ["-map", "0", "-map_metadata", "-1", "-c", "copy"], out: out, progress: progress)
         return OpResult(outputs: [out], note: evadedNote)
     }
 
     static func stripPDF(_ url: URL) throws -> OpResult {
-        guard let doc = PDFDocument(url: url) else { throw FWError("打不开这个 PDF") }
-        if doc.isLocked { throw FWError("这个 PDF 有密码保护") }
+        guard let doc = PDFDocument(url: url) else { throw FWError("打不開這個 PDF") }
+        if doc.isLocked { throw FWError("這個 PDF 有密碼保護") }
         var attributes = doc.documentAttributes ?? [:]
         let personal: [PDFDocumentAttribute] = [.authorAttribute, .creatorAttribute, .producerAttribute, .subjectAttribute,
                                                 .keywordsAttribute, .creationDateAttribute, .modificationDateAttribute]
         for key in personal { attributes.removeValue(forKey: key.rawValue) }
         doc.documentAttributes = attributes
-        let out = Out.url(for: url, suffix: "去隐私", ext: "pdf")
-        guard doc.write(to: out) else { throw FWError("保存失败") }
+        let out = Out.url(for: url, suffix: "去隱私", ext: "pdf")
+        guard doc.write(to: out) else { throw FWError("儲存失敗") }
         return OpResult(outputs: [out], note: evadedNote)
     }
 
@@ -213,7 +213,7 @@ enum Privacy {
     static func stripDocx(_ url: URL) async throws -> OpResult {
         let tmp = try Out.tempDir()
         defer { try? FileManager.default.removeItem(at: tmp) }
-        let out = Out.url(for: url, suffix: "去隐私", ext: "docx")
+        let out = Out.url(for: url, suffix: "去隱私", ext: "docx")
         try FileManager.default.copyItem(at: url, to: out)
         do {
             try FileManager.default.createDirectory(at: tmp.appendingPathComponent("docProps"), withIntermediateDirectories: true)
@@ -229,7 +229,7 @@ enum Privacy {
                 try cleaned.write(to: tmp.appendingPathComponent("docProps/\(file)"), atomically: true, encoding: .utf8)
                 changed.append("docProps/\(file)")
             }
-            guard !changed.isEmpty else { throw FWError("这个文档里没有作者信息") }
+            guard !changed.isEmpty else { throw FWError("這個文件裡沒有作者資訊") }
             try await Shell.run("/usr/bin/zip", ["-q", out.path] + changed, cwd: tmp)
         } catch {
             try? FileManager.default.removeItem(at: out)

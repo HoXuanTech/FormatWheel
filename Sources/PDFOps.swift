@@ -4,15 +4,15 @@ import Quartz
 
 enum PDFOps {
     static func open(_ url: URL) throws -> PDFDocument {
-        guard let doc = PDFDocument(url: url) else { throw FWError("打不开这个 PDF") }
-        if doc.isLocked { throw FWError("这个 PDF 有密码保护") }
+        guard let doc = PDFDocument(url: url) else { throw FWError("打不開這個 PDF") }
+        if doc.isLocked { throw FWError("這個 PDF 有密碼保護") }
         return doc
     }
 
     static func pages(_ url: URL) throws -> CGPDFDocument {
-        guard let doc = CGPDFDocument(url as CFURL) else { throw FWError("打不开这个 PDF") }
-        if doc.isEncrypted && !doc.isUnlocked { throw FWError("这个 PDF 有密码保护") }
-        guard doc.numberOfPages > 0 else { throw FWError("PDF 里没有页面") }
+        guard let doc = CGPDFDocument(url as CFURL) else { throw FWError("打不開這個 PDF") }
+        if doc.isEncrypted && !doc.isUnlocked { throw FWError("這個 PDF 有密碼保護") }
+        guard doc.numberOfPages > 0 else { throw FWError("PDF 裡沒有頁面") }
         return doc
     }
 
@@ -45,7 +45,7 @@ enum PDFOps {
         let count = doc.numberOfPages
         let quality: Double? = fmt == "jpg" ? 0.9 : nil
         if count == 1 {
-            guard let page = doc.page(at: 1), let image = render(page, scale: 2) else { throw FWError("页面渲染失败") }
+            guard let page = doc.page(at: 1), let image = render(page, scale: 2) else { throw FWError("頁面渲染失敗") }
             let out = Out.url(for: url, ext: fmt)
             try await ImageOps.write(image, to: out, fmt: fmt, quality: quality)
             return OpResult(outputs: [out])
@@ -59,7 +59,7 @@ enum PDFOps {
             try await ImageOps.write(image, to: folder.appendingPathComponent("\(base)-\(number).\(fmt)"), fmt: fmt, quality: quality)
             progress(Double(i) / Double(count))
         }
-        return OpResult(outputs: [folder], note: "\(count) 页 → 文件夹")
+        return OpResult(outputs: [folder], note: "\(count) 頁 → 資料夾")
     }
 
     /// Every page stacked into one tall JPG (split into parts past JPEG's height limit).
@@ -75,7 +75,7 @@ enum PDFOps {
             if let image = render(page, scale: CGFloat(width) / size.width) { rendered.append(image) }
             progress(Double(i) / Double(count) * 0.8)
         }
-        guard !rendered.isEmpty else { throw FWError("页面渲染失败") }
+        guard !rendered.isEmpty else { throw FWError("頁面渲染失敗") }
 
         var parts: [[CGImage]] = [[]]
         var height = 0
@@ -93,7 +93,7 @@ enum PDFOps {
             let total = part.reduce(0) { $0 + $1.height } + gap * (part.count - 1)
             guard let ctx = CGContext(data: nil, width: width, height: total, bitsPerComponent: 8, bytesPerRow: 0,
                                       space: CGColorSpace(name: CGColorSpace.sRGB)!, bitmapInfo: CGImageAlphaInfo.noneSkipLast.rawValue) else {
-                throw FWError("长图太大了")
+                throw FWError("長圖太大了")
             }
             ctx.setFillColor(CGColor(gray: 0.9, alpha: 1))
             ctx.fill(CGRect(x: 0, y: 0, width: width, height: total))
@@ -103,15 +103,15 @@ enum PDFOps {
                 ctx.draw(image, in: CGRect(x: 0, y: y, width: width, height: image.height))
                 y -= gap
             }
-            guard let stitched = ctx.makeImage() else { throw FWError("长图合成失败") }
-            let suffix = parts.count > 1 ? "长图 \(n + 1)" : "长图"
+            guard let stitched = ctx.makeImage() else { throw FWError("長圖合成失敗") }
+            let suffix = parts.count > 1 ? "長圖 \(n + 1)" : "長圖"
             let out = Out.url(for: url, suffix: suffix, ext: "jpg")
             try await ImageOps.write(stitched, to: out, fmt: "jpg", quality: 0.88)
             outputs.append(out)
         }
         progress(1)
         let skipped = doc.numberOfPages - count
-        return OpResult(outputs: outputs, note: skipped > 0 ? "只拼了前 \(count) 页" : "\(count) 页拼成\(outputs.count > 1 ? " \(outputs.count) 张" : "一张")")
+        return OpResult(outputs: outputs, note: skipped > 0 ? "只拼了前 \(count) 頁" : "\(count) 頁拼成\(outputs.count > 1 ? " \(outputs.count) 張" : "一張")")
     }
 
     private struct Line {
@@ -172,7 +172,7 @@ enum PDFOps {
         }
         TextFix.radicals(in: out)
         guard !out.string.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            throw FWError("这个 PDF 没有文字层，试试「工具 → 识字」")
+            throw FWError("這個 PDF 沒有文字層，試試「工具 → 識字」")
         }
         return out
     }
@@ -208,20 +208,20 @@ enum PDFOps {
 
     static func compress(_ url: URL) throws -> OpResult {
         let doc = try open(url)
-        let out = Out.url(for: url, suffix: "压缩", ext: "pdf")
+        let out = Out.url(for: url, suffix: "壓縮", ext: "pdf")
         guard doc.write(to: out, withOptions: [.saveImagesAsJPEGOption: true, .optimizeImagesForScreenOption: true]) else {
-            throw FWError("压缩失败")
+            throw FWError("壓縮失敗")
         }
         do {
             return try ImageOps.shrinkResult(source: url, output: out)
         } catch {
-            throw FWError("这个 PDF 已经很精简了")
+            throw FWError("這個 PDF 已經很精簡了")
         }
     }
 
     static func split(_ url: URL) throws -> OpResult {
         let doc = try open(url)
-        guard doc.pageCount > 1 else { throw FWError("只有 1 页，不用拆") }
+        guard doc.pageCount > 1 else { throw FWError("只有 1 頁，不用拆") }
         let folder = try Out.folder(for: url, suffix: "拆分")
         let base = url.deletingPathExtension().lastPathComponent
         for i in 0..<doc.pageCount {
@@ -230,7 +230,7 @@ enum PDFOps {
             single.insert(page, at: 0)
             single.write(to: folder.appendingPathComponent("\(base)-\(i + 1).pdf"))
         }
-        return OpResult(outputs: [folder], note: "拆成 \(doc.pageCount) 个文件")
+        return OpResult(outputs: [folder], note: "拆成 \(doc.pageCount) 個檔案")
     }
 
     /// PDFs and images, in drag order, into one document.
@@ -257,9 +257,9 @@ enum PDFOps {
                 if let page = source.page(at: i)?.copy() as? PDFPage { merged.insert(page, at: merged.pageCount) }
             }
         }
-        guard merged.pageCount > 0, let first = urls.first else { throw FWError("没有可以合并的页面") }
-        let out = Out.url(for: first, suffix: "合并", ext: "pdf")
-        guard merged.write(to: out) else { throw FWError("合并失败") }
+        guard merged.pageCount > 0, let first = urls.first else { throw FWError("沒有可以合併的頁面") }
+        let out = Out.url(for: first, suffix: "合併", ext: "pdf")
+        guard merged.write(to: out) else { throw FWError("合併失敗") }
         _ = keepAlive
         return out
     }
@@ -269,8 +269,8 @@ enum PDFOps {
         for i in 0..<doc.pageCount {
             if let page = doc.page(at: i) { page.rotation = (page.rotation + 90) % 360 }
         }
-        let out = Out.url(for: url, suffix: "旋转", ext: "pdf")
-        guard doc.write(to: out) else { throw FWError("保存失败") }
+        let out = Out.url(for: url, suffix: "旋轉", ext: "pdf")
+        guard doc.write(to: out) else { throw FWError("儲存失敗") }
         return OpResult(outputs: [out])
     }
 
@@ -278,11 +278,11 @@ enum PDFOps {
     static func mono(_ url: URL) throws -> OpResult {
         let doc = try pages(url)
         guard let filter = QuartzFilter(url: URL(fileURLWithPath: "/System/Library/Filters/Gray Tone.qfilter")) else {
-            throw FWError("系统里找不到灰度滤镜")
+            throw FWError("系統裡找不到灰度濾鏡")
         }
         let out = Out.url(for: url, suffix: "黑白", ext: "pdf")
-        guard let ctx = CGContext(out as CFURL, mediaBox: nil, [kCGPDFContextCreator: "格式轮盘"] as CFDictionary) else {
-            throw FWError("无法创建 PDF")
+        guard let ctx = CGContext(out as CFURL, mediaBox: nil, [kCGPDFContextCreator: "格式輪盤"] as CFDictionary) else {
+            throw FWError("無法建立 PDF")
         }
         filter.apply(to: ctx)
         for i in 1...doc.numberOfPages {
@@ -310,10 +310,10 @@ enum PDFOps {
             progress(Double(i) / Double(count))
         }
         let text = parts.joined(separator: "\n\n").trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !text.isEmpty else { throw FWError("没认出文字") }
+        guard !text.isEmpty else { throw FWError("沒認出文字") }
         let out = Out.url(for: url, suffix: "文字", ext: "txt")
         try text.write(to: out, atomically: true, encoding: .utf8)
-        return OpResult(outputs: [out], note: "认出 \(Fmt.count(text.count)) 字，已复制", clip: text)
+        return OpResult(outputs: [out], note: "認出 \(Fmt.count(text.count)) 字，已複製", clip: text)
     }
 }
 
@@ -322,11 +322,11 @@ enum TextFix {
     /// between a radical and the ordinary character. Kangxi radicals fold via NFKC; the simplified
     /// supplement radicals have no decomposition, so they are mapped by hand.
     private static let supplement: [UInt32: Character] = [
-        0x2E9F: "母", 0x2EA0: "民", 0x2EC4: "西", 0x2EC5: "见", 0x2EC6: "角", 0x2EC8: "讠", 0x2EC9: "贝",
-        0x2ECB: "车", 0x2ECE: "辶", 0x2ED0: "钅", 0x2ED3: "长", 0x2ED4: "门", 0x2ED7: "雨", 0x2ED8: "青",
-        0x2EDA: "页", 0x2EDB: "风", 0x2EDC: "飞", 0x2EDD: "食", 0x2EE0: "饣", 0x2EE2: "马", 0x2EE4: "鬼",
-        0x2EE5: "鱼", 0x2EE6: "鸟", 0x2EE7: "卤", 0x2EE8: "麦", 0x2EE9: "黄", 0x2EEA: "黾", 0x2EEC: "齐",
-        0x2EEE: "齿", 0x2EF0: "龙", 0x2EF3: "龟",
+        0x2E9F: "母", 0x2EA0: "民", 0x2EC4: "西", 0x2EC5: "見", 0x2EC6: "角", 0x2EC8: "訁", 0x2EC9: "貝",
+        0x2ECB: "車", 0x2ECE: "辶", 0x2ED0: "釒", 0x2ED3: "長", 0x2ED4: "門", 0x2ED7: "雨", 0x2ED8: "青",
+        0x2EDA: "頁", 0x2EDB: "風", 0x2EDC: "飛", 0x2EDD: "食", 0x2EE0: "飠", 0x2EE2: "馬", 0x2EE4: "鬼",
+        0x2EE5: "魚", 0x2EE6: "鳥", 0x2EE7: "滷", 0x2EE8: "麥", 0x2EE9: "黃", 0x2EEA: "黽", 0x2EEC: "齊",
+        0x2EEE: "齒", 0x2EF0: "龍", 0x2EF3: "龜",
     ]
 
     static func replacement(for unit: unichar) -> String? {

@@ -148,7 +148,7 @@ final class Overlay {
         wanted = Wanted()
         content.wanted.reset()
         if mode == .demo {
-            reveal(Wanted(level: 3, reasons: ["GPS 定位", "iPhone 15 Pro", "拍摄时间"]))
+            reveal(Wanted(level: 3, reasons: ["GPS 定位", "iPhone 15 Pro", "拍攝時間"]))
         } else {
             let token = UUID()
             scanToken = token
@@ -342,10 +342,10 @@ final class Overlay {
         if stars.level > 0 {
             stars.phase += dt
             if stars.appear < 1 { stars.appear = min(1, stars.appear + dt / 0.9) }
-            // Pointing at 去隐私 previews losing the cops: the stars start to blink.
+            // Pointing at 去隱私 previews losing the cops: the stars start to blink.
             let lyingLow = currentOption.map { $0.enabled && $0.id.hasSuffix(".strip") } ?? false
             stars.evading = lyingLow
-            stars.caption = lyingLow ? "松手 = 甩掉警察" : nil
+            stars.caption = lyingLow ? "鬆手 = 甩掉警察" : nil
             stars.needsDisplay = true
         }
     }
@@ -414,7 +414,7 @@ final class Overlay {
             Log.write("wheel: drop never reached the wheel → fallback \(option.id) on \(present.count)/\(files.count) file(s)")
             if present.isEmpty {
                 SFX.shared.play(.wasted)
-                BannerController.shared.show(passed: false, title: option.title, detail: "文件被拖到别的地方了，这次没转换", on: screen)
+                BannerController.shared.show(passed: false, title: option.title, detail: "檔案被拖到別的地方了，這次沒轉換", on: screen)
             } else {
                 Runner.shared.run(option, files: present, screen: screen, wanted: self.wanted)
             }

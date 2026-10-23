@@ -204,8 +204,8 @@ final class BusyHUD {
     private func refresh() {
         guard let first = order.first, let job = jobs[first] else { return }
         let pct = job.progress > 0.01 ? "  \(Int(job.progress * 100))%" : ""
-        let more = jobs.count > 1 ? "（还有 \(jobs.count - 1) 个）" : ""
-        view.text = "正在处理 · \(job.label)\(pct)\(more)"
+        let more = jobs.count > 1 ? "（還有 \(jobs.count - 1) 個）" : ""
+        view.text = "正在處理 · \(job.label)\(pct)\(more)"
     }
 
     private func present() {
@@ -227,7 +227,7 @@ final class BusyHUD {
     }
 }
 
-/// After 去隐私: the wanted stars blink in the top-right corner and fade out, like losing the cops in GTA.
+/// After 去隱私: the wanted stars blink in the top-right corner and fade out, like losing the cops in GTA.
 final class WantedHUD {
     static let shared = WantedHUD()
 

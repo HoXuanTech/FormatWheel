@@ -1,25 +1,25 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-TW">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>格式轮盘 FormatWheel · 拖住文件，按 Shift，一甩就转好</title>
-<meta name="description" content="住在 macOS 菜单栏里的格式转换轮盘：拖住文件，按一下 Shift，朝格子一甩，松手就转好。图片、PDF、视频、音频、文档，全程本地，免费开源。">
+<title>格式輪盤 FormatWheel · 拖住檔案，按 Shift，一甩就轉好</title>
+<meta name="description" content="住在 macOS 選單欄裡的格式轉換輪盤：拖住檔案，按一下 Shift，朝格子一甩，鬆手就轉好。圖片、PDF、影片、音訊、文件，全程在本機完成，免費開源。">
 <meta name="theme-color" content="#07090c">
 <meta name="color-scheme" content="dark">
 <link rel="icon" type="image/png" href="media/icon.png">
 <link rel="apple-touch-icon" href="media/icon.png">
 <meta property="og:type" content="website">
-<meta property="og:title" content="格式轮盘 FormatWheel">
-<meta property="og:description" content="拖住文件，按一下 ⇧ Shift，朝格子一甩，松手 —— 转好了。免费开源的 macOS 格式转换轮盘。">
-<meta property="og:url" content="https://elise616.github.io/FormatWheel/">
-<meta property="og:image" content="https://elise616.github.io/FormatWheel/media/poster.jpg">
-<meta property="og:image:width" content="1920">
-<meta property="og:image:height" content="1080">
+<meta property="og:title" content="格式輪盤 FormatWheel">
+<meta property="og:description" content="拖住檔案，按一下 ⇧ Shift，朝格子一甩，鬆手 —— 轉好了。免費開源的 macOS 格式轉換輪盤。">
+<meta property="og:url" content="https://hoxuantech.github.io/FormatWheel/">
+<meta property="og:image" content="https://hoxuantech.github.io/FormatWheel/media/wheel-image.jpg">
+<meta property="og:image:width" content="3024">
+<meta property="og:image:height" content="1964">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="格式轮盘 FormatWheel">
-<meta name="twitter:description" content="拖住文件，按一下 ⇧ Shift，朝格子一甩，松手 —— 转好了。">
-<meta name="twitter:image" content="https://elise616.github.io/FormatWheel/media/poster.jpg">
+<meta name="twitter:title" content="格式輪盤 FormatWheel">
+<meta name="twitter:description" content="拖住檔案，按一下 ⇧ Shift，朝格子一甩，鬆手 —— 轉好了。">
+<meta name="twitter:image" content="https://hoxuantech.github.io/FormatWheel/media/wheel-image.jpg">
 <style>
   :root {
     --bg: #07090c;
@@ -32,7 +32,7 @@
     --gold: #f2c14e;
     --red: #d7322b;
     --green: #2fbf62;
-    --cn: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Source Han Sans SC", system-ui, -apple-system, sans-serif;
+    --cn: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", "Source Han Sans TC", system-ui, -apple-system, sans-serif;
     --hud: "Avenir Next Condensed", "Arial Narrow", "Roboto Condensed", var(--cn);
     --impact: Impact, Haettenschweiler, "Arial Narrow Bold", "Franklin Gothic Bold", sans-serif;
   }
@@ -196,11 +196,11 @@
 
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="#top"><img src="media/icon.png" alt="" width="28" height="28"><span>格式轮盘</span></a>
+    <a class="brand" href="#top"><img src="media/icon.png" alt="" width="28" height="28"><span>格式輪盤</span></a>
     <nav>
-      <a class="optional" href="#wheel">能转什么</a>
-      <a href="#install">安装</a>
-      <a href="https://github.com/Elise616/FormatWheel">GitHub</a>
+      <a class="optional" href="#wheel">能轉什麼</a>
+      <a href="#install">安裝</a>
+      <a href="https://github.com/HoXuanTech/FormatWheel">GitHub</a>
     </nav>
   </div>
 </header>
@@ -210,41 +210,39 @@
     <div class="ring" aria-hidden="true"></div>
     <div class="wrap">
       <img class="hero-icon" src="media/icon.png" alt="" width="96" height="96">
-      <p class="kicker hud">格式轮盘 · FormatWheel · for macOS</p>
-      <h1>拖住文件，按一下 <kbd>⇧ Shift</kbd><br>朝格子一甩，松手 —— <em>转好了。</em></h1>
-      <p class="lede">住在菜单栏里的格式转换轮盘。图片、PDF、视频、音频、文档，70 多种转换和小工具，全程在你的 Mac 上完成。</p>
+      <p class="kicker hud">格式輪盤 · FormatWheel · for macOS</p>
+      <h1>拖住檔案，按一下 <kbd>⇧ Shift</kbd><br>朝格子一甩，鬆手 —— <em>轉好了。</em></h1>
+      <p class="lede">住在選單欄裡的格式轉換輪盤。圖片、PDF、影片、音訊、文件，70 多種轉換和小工具，全程在你的 Mac 上完成。</p>
       <div class="cta">
-        <a class="btn primary" href="https://github.com/Elise616/FormatWheel/releases/latest/download/FormatWheel.dmg">
+        <a class="btn primary" href="https://github.com/HoXuanTech/FormatWheel/releases/latest/download/FormatWheel.dmg">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg>
-          下载 macOS 版
+          下載 macOS 版
         </a>
-        <a class="btn ghost" href="#promo">▶ 看宣传片</a>
+        <a class="btn ghost" href="#promo">▶ 看繁體介面</a>
       </div>
-      <p class="meta">v1.0.0 · 2.2 MB · macOS 14 及以上 · Apple 芯片 / Intel 通用 · 免费开源</p>
+      <p class="meta">v1.1.0 · 約 2.3 MB · macOS 14 及以上 · Apple 晶片 / Intel 通用 · 免費開源</p>
     </div>
   </section>
 
   <section id="promo" class="section" style="padding-top: 24px">
     <div class="wrap">
       <div class="frame">
-        <video controls playsinline preload="metadata" poster="media/poster.jpg" width="1920" height="1080">
-          <source src="media/promo.mp4" type="video/mp4">
-        </video>
+        <img src="media/wheel-image.jpg" alt="繁體中文圖片格式轉換輪盤" width="3024" height="1964">
       </div>
-      <p class="caption">40 秒宣传片 · 记得开声音 · <a href="media/promo.mp4" download>下载 MP4</a></p>
+      <p class="caption">macOS 繁體中文介面 · Windows 10 以上版本開發中</p>
     </div>
   </section>
 
   <section id="how" class="section">
     <div class="wrap">
       <p class="kicker hud">How it works</p>
-      <h2>三步，比打开转换网站还快</h2>
+      <h2>三步，比開啟轉換網站還快</h2>
       <div class="how">
-        <img src="media/demo.gif" alt="拖住文件，按 Shift，轮盘弹出，朝格子一甩，弹出 MISSION PASSED" width="720" height="406" loading="lazy">
+        <img src="media/wheel-tools.jpg" alt="繁體中文工具輪盤" width="3024" height="1964" loading="lazy">
         <ol class="steps">
-          <li><span class="num">01</span><b>拖住文件</b><p>在 Finder 或桌面上拖住一个或多个文件，先别松手。</p></li>
-          <li><span class="num">02</span><b>按一下 <kbd>⇧ Shift</kbd></b><p>屏幕暗下来，轮盘在鼠标处弹出；再按一次翻到「工具」页。</p></li>
-          <li><span class="num">03</span><b>朝格子一甩，松手</b><p>方向对就行，不用拖到格子上。结果存在原文件旁边，原文件不动。</p></li>
+          <li><span class="num">01</span><b>拖住檔案</b><p>在 Finder 或桌面上拖住一個或多個檔案，先別鬆手。</p></li>
+          <li><span class="num">02</span><b>按一下 <kbd>⇧ Shift</kbd></b><p>螢幕暗下來，輪盤在滑鼠處彈出；再按一次翻到「工具」頁。</p></li>
+          <li><span class="num">03</span><b>朝格子一甩，鬆手</b><p>方向對就行，不用拖到格子上。結果存在原檔案旁邊，原檔案不動。</p></li>
         </ol>
       </div>
     </div>
@@ -253,20 +251,20 @@
   <section id="wheel" class="section">
     <div class="wrap">
       <p class="kicker hud">Loadout</p>
-      <h2>轮盘里有什么</h2>
-      <p class="intro">拖什么文件，就弹出什么轮盘。第 1 页是格式转换，按 Shift 翻到第 2 页是工具。右上角属性条告诉你这一下会得到什么、牺牲什么。</p>
+      <h2>輪盤裡有什麼</h2>
+      <p class="intro">拖什麼檔案，就彈出什麼輪盤。第 1 頁是格式轉換，按 Shift 翻到第 2 頁是工具。右上角屬性條告訴你這一下會得到什麼、犧牲什麼。</p>
       <div class="gallery">
-        <figure><img src="media/wheel-image.jpg" alt="图片的格式转换轮盘" width="1600" height="1039" loading="lazy"><figcaption>图片 · 格式转换</figcaption></figure>
-        <figure><img src="media/wheel-video.jpg" alt="视频的格式转换轮盘" width="1600" height="1039" loading="lazy"><figcaption>视频</figcaption></figure>
-        <figure><img src="media/wheel-audio.jpg" alt="音频的格式转换轮盘" width="1600" height="1039" loading="lazy"><figcaption>音频</figcaption></figure>
+        <figure><img src="media/wheel-image.jpg" alt="圖片的格式轉換輪盤" width="1600" height="1039" loading="lazy"><figcaption>圖片 · 格式轉換</figcaption></figure>
+        <figure><img src="media/wheel-video.jpg" alt="影片的格式轉換輪盤" width="1600" height="1039" loading="lazy"><figcaption>影片</figcaption></figure>
+        <figure><img src="media/wheel-audio.jpg" alt="音訊的格式轉換輪盤" width="1600" height="1039" loading="lazy"><figcaption>音訊</figcaption></figure>
       </div>
       <div class="kinds">
-        <div class="kind"><h3>图片</h3><p><span class="tag">转换</span>PNG · JPG · HEIC · WebP · PDF · AVIF · GIF · TIFF</p><p><span class="tag tool">工具</span>压缩 · 缩小一半 · 抠图 · 识字 · 黑白 · 旋转 · 去隐私 · 加背景</p></div>
-        <div class="kind"><h3>PDF</h3><p><span class="tag">转换</span>PNG · JPG · 长图 · Word · TXT · Markdown · RTF · HTML</p><p><span class="tag tool">工具</span>压缩 · 拆页 · 合并 · 旋转 · 黑白 · 识字 · 去隐私 · ZIP</p></div>
-        <div class="kind"><h3>视频</h3><p><span class="tag">转换</span>MP4 · MOV · HEVC · WebM · GIF · MP3 · M4A · WAV</p><p><span class="tag tool">工具</span>压缩 · 静音 · 720P · 截封面 · 2 倍速 · 慢放 · 去隐私 · ZIP</p></div>
-        <div class="kind"><h3>音频</h3><p><span class="tag">转换</span>MP3 · M4A · WAV · FLAC · AIFF · Opus · ALAC · iPhone 铃声</p><p><span class="tag tool">工具</span>压缩 · 单声道 · 响度统一 · 1.5 倍速 · ZIP · 复制路径</p></div>
-        <div class="kind"><h3>文档</h3><p><span class="tag">转换</span>PDF · Word · TXT · Markdown · HTML · RTF · ODT · DOC</p><p><span class="tag tool">工具</span>字数统计 · 复制全文 · 去隐私 · ZIP · 复制路径</p></div>
-        <div class="kind"><h3>其他 / 文件夹</h3><p><span class="tag">通用</span>ZIP · 复制路径 · 复制文件名 · SHA-256</p><p class="muted">多选图片时，PDF 格子会把它们合成一个 PDF。</p></div>
+        <div class="kind"><h3>圖片</h3><p><span class="tag">轉換</span>PNG · JPG · HEIC · WebP · PDF · AVIF · GIF · TIFF</p><p><span class="tag tool">工具</span>壓縮 · 縮小一半 · 摳圖 · 識字 · 黑白 · 旋轉 · 去隱私 · 加背景</p></div>
+        <div class="kind"><h3>PDF</h3><p><span class="tag">轉換</span>PNG · JPG · 長圖 · Word · TXT · Markdown · RTF · HTML</p><p><span class="tag tool">工具</span>壓縮 · 拆頁 · 合併 · 旋轉 · 黑白 · 識字 · 去隱私 · ZIP</p></div>
+        <div class="kind"><h3>影片</h3><p><span class="tag">轉換</span>MP4 · MOV · HEVC · WebM · GIF · MP3 · M4A · WAV</p><p><span class="tag tool">工具</span>壓縮 · 靜音 · 720P · 截封面 · 2 倍速 · 慢放 · 去隱私 · ZIP</p></div>
+        <div class="kind"><h3>音訊</h3><p><span class="tag">轉換</span>MP3 · M4A · WAV · FLAC · AIFF · Opus · ALAC · iPhone 鈴聲</p><p><span class="tag tool">工具</span>壓縮 · 單聲道 · 響度統一 · 1.5 倍速 · ZIP · 複製路徑</p></div>
+        <div class="kind"><h3>文件</h3><p><span class="tag">轉換</span>PDF · Word · TXT · Markdown · HTML · RTF · ODT · DOC</p><p><span class="tag tool">工具</span>字數統計 · 複製全文 · 去隱私 · ZIP · 複製路徑</p></div>
+        <div class="kind"><h3>其他 / 資料夾</h3><p><span class="tag">通用</span>ZIP · 複製路徑 · 複製檔名 · SHA-256</p><p class="muted">多選圖片時，PDF 格子會把它們合成一個 PDF。</p></div>
       </div>
     </div>
   </section>
@@ -275,28 +273,28 @@
     <div class="wrap split">
       <div>
         <p class="kicker hud">Wanted level</p>
-        <h2>通缉星级</h2>
-        <p>轮盘一打开，右上角就亮起通缉星：星越多，文件里能追踪到你的信息越多。</p>
+        <h2>通緝星級</h2>
+        <p>輪盤一開啟，右上角就亮起通緝星：星越多，檔案裡能追蹤到你的資訊越多。</p>
         <ul class="clues">
-          <li><span>照片 / 视频里的 GPS 定位</span><span class="stars">★★</span></li>
-          <li><span>手机或相机型号、拍摄时间、机身序列号</span><span class="stars">各 ★</span></li>
-          <li><span>PDF 的作者 / 制作软件 / 主题关键词</span><span class="stars">★★ ★ ★</span></li>
+          <li><span>照片 / 影片裡的 GPS 定位</span><span class="stars">★★</span></li>
+          <li><span>手機或相機型號、拍攝時間、機身序列號</span><span class="stars">各 ★</span></li>
+          <li><span>PDF 的作者 / 製作軟體 / 主題關鍵詞</span><span class="stars">★★ ★ ★</span></li>
           <li><span>Word 的作者 / 修改人 / 公司名</span><span class="stars">★★ ★ ★</span></li>
         </ul>
-        <p class="muted">指向「去隐私」格子时星星开始闪，松手后星星熄灭 —— 甩掉警察。照片、视频、PDF、Word 都支持，不重新压缩画面。</p>
+        <p class="muted">指向「去隱私」格子時星星開始閃，鬆手後星星熄滅 —— 甩掉警察。照片、影片、PDF、Word 都支援，不重新壓縮畫面。</p>
       </div>
-      <img src="media/wheel-tools.jpg" alt="工具页指向「去隐私」，右上角四颗通缉星在闪" width="1600" height="1039" loading="lazy">
+      <img src="media/wheel-tools.jpg" alt="工具頁指向「去隱私」，右上角四顆通緝星在閃" width="1600" height="1039" loading="lazy">
     </div>
   </section>
 
   <section id="result" class="section">
     <div class="wrap">
       <p class="kicker hud">Mission</p>
-      <h2>翻车也要有仪式感</h2>
-      <p class="intro">成功时先响一声武器上膛（手枪拉套筒、霰弹枪“咔嚓”、手雷拔环……），再弹出 <span class="banner-word passed">MISSION PASSED</span>；失败就压暗屏幕打出 <span class="banner-word wasted">WASTED</span>，顺便告诉你怎么修。</p>
+      <h2>翻車也要有儀式感</h2>
+      <p class="intro">成功時先響一聲武器上膛（手槍拉套筒、霰彈槍“咔嚓”、手雷拔環……），再彈出 <span class="banner-word passed">MISSION PASSED</span>；失敗就壓暗螢幕打出 <span class="banner-word wasted">WASTED</span>，順便告訴你怎麼修。</p>
       <div class="duo">
-        <img src="media/mission-passed.jpg" alt="MISSION PASSED 横幅" width="1600" height="1039" loading="lazy">
-        <img src="media/wasted.jpg" alt="WASTED 画面" width="1600" height="1039" loading="lazy">
+        <img src="media/mission-passed.jpg" alt="MISSION PASSED 橫幅" width="1600" height="1039" loading="lazy">
+        <img src="media/wasted.jpg" alt="WASTED 畫面" width="1600" height="1039" loading="lazy">
       </div>
     </div>
   </section>
@@ -304,11 +302,11 @@
   <section id="icons" class="section">
     <div class="wrap">
       <p class="kicker hud">Two styles</p>
-      <h2>格子图标，两种都有</h2>
-      <p class="intro">默认是格式图标：一眼看出格式本身的特点，PNG 带透明格、JPG 是风景照、WebP 是浏览器、TIFF 是打印机。菜单栏 →「格子图标」可以换成武器：PNG 突击步枪、JPG 手枪、PDF 火箭筒、抠图 匕首。</p>
+      <h2>格子圖示，兩種都有</h2>
+      <p class="intro">預設是格式圖示：一眼看出格式本身的特點，PNG 帶透明格、JPG 是風景照、WebP 是瀏覽器、TIFF 是印表機。選單欄 →「格子圖示」可以換成武器：PNG 突擊步槍、JPG 手槍、PDF 火箭筒、摳圖 匕首。</p>
       <div class="duo">
-        <img src="media/icons.jpg" alt="全部格式图标" width="1600" height="1400" loading="lazy">
-        <img src="media/weapons-mode.jpg" alt="武器模式的轮盘" width="1600" height="1039" loading="lazy">
+        <img src="media/icons.jpg" alt="全部格式圖示" width="1600" height="1400" loading="lazy">
+        <img src="media/weapons-mode.jpg" alt="武器剪影圖鑑" width="3000" height="1360" loading="lazy">
       </div>
     </div>
   </section>
@@ -316,31 +314,29 @@
   <section id="install" class="section">
     <div class="wrap">
       <p class="kicker hud">Install</p>
-      <h2>安装</h2>
+      <h2>安裝</h2>
       <ol class="install">
-        <li>下载 <a href="https://github.com/Elise616/FormatWheel/releases/latest/download/FormatWheel.dmg">FormatWheel.dmg</a>，双击打开，把「FormatWheel」拖进「Applications」。</li>
+        <li>下載 <a href="https://github.com/HoXuanTech/FormatWheel/releases/latest/download/FormatWheel.dmg">FormatWheel.dmg</a>，雙擊開啟，把「FormatWheel」拖進「Applications」。</li>
         <li>
-          第一次打开时 macOS 会拦一下（“无法验证开发者”）。这是个人做的免费开源小工具，没有付费给苹果做公证，不是病毒：
+          如果 macOS 顯示「無法驗證開發者」，先確認下載來源並核對檔案雜湊值。此版本未經 Apple 公證；是否信任與開啟，由使用者自行決定：
           <div class="os">
-            <div><b>macOS 14</b><p>在「应用程序」里右键点 FormatWheel →「打开」→ 弹窗里再点「打开」。</p></div>
-            <div><b>macOS 15 及以后</b><p>先双击一次，然后去「系统设置 → 隐私与安全性」，拉到下面点「仍要打开」，输入开机密码。</p></div>
+            <div><b>macOS 14</b><p>在「應用程式」裡右鍵點 FormatWheel →「開啟」→ 彈窗裡再點「開啟」。</p></div>
+            <div><b>macOS 15 及以後</b><p>先雙擊一次，然後去「系統設定 → 隱私與安全性」，拉到下面點「仍要開啟」，輸入開機密碼。</p></div>
           </div>
-          <p>还是打不开：打开「终端」，粘贴这一行回车，再双击打开。</p>
-          <div class="cmd"><code>xattr -dr com.apple.quarantine /Applications/FormatWheel.app</code><button type="button" data-copy="xattr -dr com.apple.quarantine /Applications/FormatWheel.app">复制</button></div>
         </li>
-        <li>菜单栏会多一个小轮盘图标（Dock 里没有），第一次会自动演示一遍。之后在 Finder 里拖住文件、按 Shift 就行。</li>
+        <li>選單欄會多一個小輪盤圖示（Dock 裡沒有），第一次會自動示範一遍。之後在 Finder 裡拖住檔案、按 Shift 就行。</li>
       </ol>
       <div class="ammo">
-        <b>可选：装上更多「弹药」</b>
-        <p>WebP 需要 cwebp；AVIF、WebM、MP3、Opus、视频变速等需要 ffmpeg。没装时这些格子显示「未装备」，其他格子照常能用。装了 <a href="https://brew.sh">Homebrew</a> 的话：</p>
-        <div class="cmd"><code>brew install ffmpeg webp</code><button type="button" data-copy="brew install ffmpeg webp">复制</button></div>
+        <b>可選：裝上更多「彈藥」</b>
+        <p>WebP 需要 cwebp；AVIF、WebM、MP3、Opus、影片變速等需要 ffmpeg。沒裝時這些格子顯示「未裝備」，其他格子照常能用。裝了 <a href="https://brew.sh">Homebrew</a> 的話：</p>
+        <div class="cmd"><code>brew install ffmpeg webp</code><button type="button" data-copy="brew install ffmpeg webp">複製</button></div>
       </div>
       <div class="cta" style="margin-top: 36px">
-        <a class="btn primary" href="https://github.com/Elise616/FormatWheel/releases/latest/download/FormatWheel.dmg">
+        <a class="btn primary" href="https://github.com/HoXuanTech/FormatWheel/releases/latest/download/FormatWheel.dmg">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg>
-          下载 macOS 版
+          下載 macOS 版
         </a>
-        <a class="btn ghost" href="https://github.com/Elise616/FormatWheel">查看源码</a>
+        <a class="btn ghost" href="https://github.com/HoXuanTech/FormatWheel">檢視原始碼</a>
       </div>
     </div>
   </section>
@@ -348,9 +344,9 @@
 
 <footer>
   <div class="wrap">
-    <p>格式轮盘 FormatWheel · <a href="https://github.com/Elise616/FormatWheel">GitHub</a> · <a href="https://github.com/Elise616/FormatWheel/blob/main/LICENSE">MIT 协议</a> · <a href="https://github.com/Elise616/FormatWheel/releases">所有版本</a> · 灵感来自 <a href="https://x.com/th2049/status/2111477585461039241">@th2049</a></p>
-    <p>所有转换都在你的 Mac 上完成：不联网、不上传、不收集任何数据。</p>
-    <p>致敬向的个人作品，与任何游戏公司无关。应用里的图标、武器剪影和音效全部由代码现画、现合成。</p>
+    <p>格式輪盤 FormatWheel · <a href="https://github.com/HoXuanTech/FormatWheel">GitHub</a> · <a href="https://github.com/HoXuanTech/FormatWheel/blob/main/LICENSE">MIT 協議</a> · <a href="https://github.com/HoXuanTech/FormatWheel/releases">所有版本</a> · 靈感來自 <a href="https://x.com/th2049/status/2111477585461039241">@th2049</a></p>
+    <p>所有轉換都在你的 Mac 上完成：不聯網、不上傳、不收集任何資料。</p>
+    <p>致敬向的個人作品，與任何遊戲公司無關。應用裡的圖示、武器剪影和音效全部由程式碼現畫、現合成。</p>
   </div>
 </footer>
 
@@ -360,12 +356,12 @@
       var text = button.getAttribute('data-copy');
       var done = function (label) {
         button.textContent = label;
-        setTimeout(function () { button.textContent = '复制'; }, 1600);
+        setTimeout(function () { button.textContent = '複製'; }, 1600);
       };
       try {
-        navigator.clipboard.writeText(text).then(function () { done('已复制'); }, function () { done('请手动复制'); });
+        navigator.clipboard.writeText(text).then(function () { done('已複製'); }, function () { done('請手動複製'); });
       } catch (e) {
-        done('请手动复制');
+        done('請手動複製');
       }
     });
   });

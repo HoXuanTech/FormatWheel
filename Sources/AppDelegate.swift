@@ -8,7 +8,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         statusItem.button?.image = Icons.menuBar()
-        statusItem.button?.toolTip = "格式轮盘：拖着文件按 ⇧ Shift"
+        statusItem.button?.toolTip = "格式輪盤：拖著檔案按 ⇧ Shift"
         let menu = NSMenu()
         menu.delegate = self
         statusItem.menu = menu
@@ -41,11 +41,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func menuNeedsUpdate(_ menu: NSMenu) {
         menu.removeAllItems()
-        menu.addItem(disabled("格式轮盘"))
-        menu.addItem(disabled("拖着文件按 ⇧ Shift 呼出轮盘"))
+        menu.addItem(disabled("格式輪盤"))
+        menu.addItem(disabled("拖著檔案按 ⇧ Shift 叫出輪盤"))
         menu.addItem(.separator())
-        menu.addItem(item("看看效果（演示）", #selector(showDemo)))
-        menu.addItem(item("选择文件打开轮盘…", #selector(chooseFiles)))
+        menu.addItem(item("看看效果（示範）", #selector(showDemo)))
+        menu.addItem(item("選擇檔案開啟輪盤…", #selector(chooseFiles)))
         menu.addItem(.separator())
 
         let recent = Recents.shared.items
@@ -59,8 +59,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             entry.image?.size = NSSize(width: 16, height: 16)
             recentMenu.addItem(entry)
         }
-        if recent.isEmpty { recentMenu.addItem(disabled("还没有转换过文件")) }
-        let recentItem = submenu("最近转换（点击在 Finder 中显示）", recentMenu)
+        if recent.isEmpty { recentMenu.addItem(disabled("還沒有轉換過檔案")) }
+        let recentItem = submenu("最近轉換（點選在 Finder 中顯示）", recentMenu)
         menu.addItem(recentItem)
         menu.addItem(.separator())
 
@@ -81,7 +81,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             entry.state = Settings.shared.iconStyle == style ? .on : .off
             iconMenu.addItem(entry)
         }
-        menu.addItem(submenu("格子图标", iconMenu))
+        menu.addItem(submenu("格子圖示", iconMenu))
 
         let sizeMenu = NSMenu()
         for size in WheelSize.allCases {
@@ -90,16 +90,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             entry.state = Settings.shared.wheelSize == size ? .on : .off
             sizeMenu.addItem(entry)
         }
-        menu.addItem(submenu("轮盘大小", sizeMenu))
+        menu.addItem(submenu("輪盤大小", sizeMenu))
 
         menu.addItem(toggle("音效", Settings.shared.sound, #selector(toggleSound)))
-        menu.addItem(toggle("背景虚化", Settings.shared.blur, #selector(toggleBlur)))
-        menu.addItem(toggle("完成横幅（MISSION PASSED）", Settings.shared.banner, #selector(toggleBanner)))
-        menu.addItem(toggle("登录时自动启动", SMAppService.mainApp.status == .enabled, #selector(toggleLogin)))
+        menu.addItem(toggle("背景虛化", Settings.shared.blur, #selector(toggleBlur)))
+        menu.addItem(toggle("完成橫幅（MISSION PASSED）", Settings.shared.banner, #selector(toggleBanner)))
+        menu.addItem(toggle("登入時自動啟動", SMAppService.mainApp.status == .enabled, #selector(toggleLogin)))
         menu.addItem(.separator())
         menu.addItem(disabled(toolStatus()))
         menu.addItem(.separator())
-        menu.addItem(item("退出格式轮盘", #selector(quit), key: "q"))
+        menu.addItem(item("退出格式輪盤", #selector(quit), key: "q"))
     }
 
     private func item(_ title: String, _ action: Selector, key: String = "") -> NSMenuItem {
@@ -136,8 +136,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     private func toolStatus() -> String {
         let missing = ["ffmpeg", "cwebp"].filter { !Shell.has($0) }
-        if missing.isEmpty { return "弹药充足：ffmpeg ✓  cwebp ✓" }
-        return "未装备：" + missing.joined(separator: "、") + "（brew install 后解锁更多格式）"
+        if missing.isEmpty { return "彈藥充足：ffmpeg ✓  cwebp ✓" }
+        return "未裝備：" + missing.joined(separator: "、") + "（brew install 後解鎖更多格式）"
     }
 
     // MARK: - Actions
@@ -158,8 +158,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let panel = NSOpenPanel()
         panel.allowsMultipleSelection = true
         panel.canChooseDirectories = true
-        panel.prompt = "打开轮盘"
-        panel.message = "选好文件后，用鼠标点轮盘上的格子"
+        panel.prompt = "開啟輪盤"
+        panel.message = "選好檔案後，用滑鼠點輪盤上的格子"
         guard panel.runModal() == .OK, !panel.urls.isEmpty, let screen = NSScreen.main else { return }
         Overlay.shared.open(files: panel.urls, mode: .click, at: CGPoint(x: screen.frame.midX, y: screen.frame.midY))
     }
@@ -201,8 +201,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         } catch {
             NSApp.activate(ignoringOtherApps: true)
             let alert = NSAlert()
-            alert.messageText = "没能设置自动启动"
-            alert.informativeText = "\(error.localizedDescription)\n\n可以在「系统设置 → 通用 → 登录项」里手动添加格式轮盘。"
+            alert.messageText = "沒能設定自動啟動"
+            alert.informativeText = "\(error.localizedDescription)\n\n可以在「系統設定 → 通用 → 登入項」裡手動新增格式輪盤。"
             alert.runModal()
         }
     }

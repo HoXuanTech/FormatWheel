@@ -80,7 +80,7 @@ enum MediaOps {
                        timeRange: CMTimeRange? = nil, progress: @escaping ProgressFn,
                        configure: ((AVAssetExportSession) -> Void)? = nil) async throws {
         guard let session = AVAssetExportSession(asset: asset, presetName: preset) else {
-            throw FWError("系统编码器处理不了这个文件")
+            throw FWError("系統編碼器處理不了這個檔案")
         }
         session.outputURL = out
         session.outputFileType = type
@@ -99,7 +99,7 @@ enum MediaOps {
         poll.cancel()
         guard session.status == .completed else {
             try? FileManager.default.removeItem(at: out)
-            throw FWError(session.error?.localizedDescription ?? "导出失败")
+            throw FWError(session.error?.localizedDescription ?? "匯出失敗")
         }
     }
 
@@ -186,7 +186,7 @@ enum MediaOps {
             return OpResult(outputs: [out])
 
         case "vid.compress":
-            let out = Out.url(for: url, suffix: "压缩", ext: "mp4")
+            let out = Out.url(for: url, suffix: "壓縮", ext: "mp4")
             if Shell.ffmpeg != nil {
                 try await ff(url, ["-c:v", "libx264", "-preset", "faster", "-crf", "27", "-vf", scaleFilter(maxSide: 1920), "-pix_fmt", "yuv420p",
                                    "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart"], out: out, progress: progress)
@@ -198,11 +198,11 @@ enum MediaOps {
         case "vid.mute":
             if Shell.ffmpeg != nil {
                 let ext = ["mp4", "mov", "m4v", "mkv", "webm"].contains(url.pathExtension.lowercased()) ? url.pathExtension.lowercased() : "mp4"
-                let out = Out.url(for: url, suffix: "静音", ext: ext)
+                let out = Out.url(for: url, suffix: "靜音", ext: ext)
                 try await ff(url, ["-map", "0:v", "-c", "copy", "-an"], out: out, progress: progress)
                 return OpResult(outputs: [out])
             }
-            let out = Out.url(for: url, suffix: "静音", ext: "mov")
+            let out = Out.url(for: url, suffix: "靜音", ext: "mov")
             try await muteNative(url, out: out, progress: progress)
             return OpResult(outputs: [out])
 
@@ -248,7 +248,7 @@ enum MediaOps {
     static func nativeGIF(_ url: URL, out: URL, progress: ProgressFn) async throws {
         let asset = AVURLAsset(url: url)
         let length = min(await duration(url), 30)
-        guard length > 0 else { throw FWError("读不出视频长度") }
+        guard length > 0 else { throw FWError("讀不出影片長度") }
         let generator = AVAssetImageGenerator(asset: asset)
         generator.appliesPreferredTrackTransform = true
         generator.maximumSize = CGSize(width: 540, height: 540)
@@ -257,7 +257,7 @@ enum MediaOps {
         let fps = 10.0
         let count = max(1, Int(length * fps))
         guard let dest = CGImageDestinationCreateWithURL(out as CFURL, "com.compuserve.gif" as CFString, count, nil) else {
-            throw FWError("无法创建 GIF")
+            throw FWError("無法建立 GIF")
         }
         CGImageDestinationSetProperties(dest, [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFLoopCount: 0]] as CFDictionary)
         let frameProps = [kCGImagePropertyGIFDictionary: [kCGImagePropertyGIFDelayTime: 1 / fps]] as CFDictionary
@@ -266,7 +266,7 @@ enum MediaOps {
             CGImageDestinationAddImage(dest, frame, frameProps)
             progress(Double(i + 1) / Double(count))
         }
-        guard CGImageDestinationFinalize(dest) else { throw FWError("GIF 写入失败") }
+        guard CGImageDestinationFinalize(dest) else { throw FWError("GIF 寫入失敗") }
     }
 
     static func muteNative(_ url: URL, out: URL, progress: @escaping ProgressFn) async throws {
@@ -341,11 +341,11 @@ enum MediaOps {
             try await ff(url, ["-vn", "-c:a", "libopus", "-b:a", "128k"], out: out, progress: progress)
             return OpResult(outputs: [out])
         case "aud.to.alac":
-            let out = Out.url(for: url, suffix: "无损", ext: "m4a")
+            let out = Out.url(for: url, suffix: "無損", ext: "m4a")
             try await audioVia(url, out: out, af: ["-f", "m4af", "-d", "alac"], ff: ["-c:a", "alac"], progress: progress)
             return OpResult(outputs: [out])
         case "aud.to.m4r":
-            let out = Out.url(for: url, suffix: "铃声", ext: "m4r")
+            let out = Out.url(for: url, suffix: "鈴聲", ext: "m4r")
             let length = await duration(url)
             if await avAudio(url) {
                 let range = CMTimeRange(start: .zero, duration: CMTime(seconds: min(40, max(length, 1)), preferredTimescale: 600))
@@ -355,9 +355,9 @@ enum MediaOps {
             } else {
                 try await ff(url, ["-vn", "-t", "40", "-c:a", "aac", "-b:a", "256k", "-f", "ipod"], out: out, limit: 40, progress: progress)
             }
-            return OpResult(outputs: [out], note: length > 40 ? "截取了前 40 秒" : nil)
+            return OpResult(outputs: [out], note: length > 40 ? "擷取了前 40 秒" : nil)
         case "aud.compress":
-            let out = Out.url(for: url, suffix: "压缩", ext: "m4a")
+            let out = Out.url(for: url, suffix: "壓縮", ext: "m4a")
             try await audioVia(url, out: out, af: ["-f", "m4af", "-d", "aac", "-b", "96000"], ff: ["-c:a", "aac", "-b:a", "96k"], progress: progress)
             return try ImageOps.shrinkResult(source: url, output: out)
         case "aud.mono", "aud.loud", "aud.fast":
@@ -365,9 +365,9 @@ enum MediaOps {
             let rate = await sampleRate(url)
             let (suffix, filter): (String, [String]) = {
                 switch id {
-                case "aud.mono": return ("单声道", ["-ac", "1"])
+                case "aud.mono": return ("單聲道", ["-ac", "1"])
                 // loudnorm upsamples to 192 kHz internally; write back at the source rate.
-                case "aud.loud": return ("响度统一", ["-af", "loudnorm=I=-16:TP=-1.5:LRA=11", "-ar", String(rate)])
+                case "aud.loud": return ("響度統一", ["-af", "loudnorm=I=-16:TP=-1.5:LRA=11", "-ar", String(rate)])
                 default: return ("1.5倍速", ["-af", "atempo=1.5"])
                 }
             }()

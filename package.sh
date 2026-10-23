@@ -5,17 +5,17 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-UNIVERSAL=1 ./build.sh
+if [ "${SKIP_BUILD:-0}" != "1" ]; then UNIVERSAL=1 ./build.sh; fi
 VERSION=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" Resources/Info.plist)
 
 rm -rf dist
 mkdir -p dist/stage
-cp -R build/FormatWheel.app dist/stage/
+ditto --norsrc build/FormatWheel.app dist/stage/FormatWheel.app
 ln -s /Applications dist/stage/Applications
-cp "Resources/打不开？看这里.txt" dist/stage/
+cp "Resources/打不開？看這裡.txt" dist/stage/
 
 echo "Packing DMG…"
-hdiutil create -volname "格式轮盘 $VERSION" -srcfolder dist/stage -ov -format UDZO dist/FormatWheel.dmg >/dev/null
+hdiutil create -volname "格式輪盤 $VERSION" -srcfolder dist/stage -ov -format UDZO dist/FormatWheel.dmg >/dev/null
 ditto -c -k --sequesterRsrc --keepParent build/FormatWheel.app dist/FormatWheel.zip
 rm -rf dist/stage
 ls -lh dist

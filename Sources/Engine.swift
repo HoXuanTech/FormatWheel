@@ -5,13 +5,13 @@ struct RunSummary {
     var outputs: [URL]
     var title: String
     var detail: String
-    /// Display name of the folder the results went to ("桌面", "下载"…).
+    /// Display name of the folder the results went to ("桌面", "下載"…).
     var saved: String? {
         outputs.first.map { FileManager.default.displayName(atPath: $0.deletingLastPathComponent().path) }
     }
 }
 
-/// The last few results, for the menu's "最近转换" list.
+/// The last few results, for the menu's "最近轉換" list.
 final class Recents {
     static let shared = Recents()
     private let key = "recentOutputs"
@@ -30,7 +30,7 @@ final class Recents {
 enum Engine {
     /// Runs one wheel option over the dragged files.
     static func run(_ id: String, label: String, files: [URL], progress: @escaping ProgressFn) async throws -> RunSummary {
-        let name = files.count == 1 ? files[0].lastPathComponent : "\(files.count) 个文件"
+        let name = files.count == 1 ? files[0].lastPathComponent : "\(files.count) 個檔案"
         let title = "\(name)  →  \(label)"
 
         // Actions that take the whole selection at once.
@@ -43,10 +43,10 @@ enum Engine {
             return RunSummary(outputs: [out], title: title, detail: "\(out.lastPathComponent) · \(Fmt.bytes(Fmt.size(of: out))) · 存到「\(FileManager.default.displayName(atPath: out.deletingLastPathComponent().path))」")
         case "gen.path":
             await MainActor.run { Clipboard.set(files.map(\.path).joined(separator: "\n")) }
-            return RunSummary(outputs: [], title: title, detail: files.count == 1 ? files[0].path : "\(files.count) 条路径已复制")
+            return RunSummary(outputs: [], title: title, detail: files.count == 1 ? files[0].path : "\(files.count) 條路徑已複製")
         case "gen.name":
             await MainActor.run { Clipboard.set(files.map(\.lastPathComponent).joined(separator: "\n")) }
-            return RunSummary(outputs: [], title: title, detail: "已复制到剪贴板")
+            return RunSummary(outputs: [], title: title, detail: "已複製到剪貼簿")
         default:
             break
         }
@@ -72,7 +72,7 @@ enum Engine {
             }
         }
         if outputs.isEmpty, notes.isEmpty, clips.isEmpty {
-            throw failures.first ?? FWError("没有可以处理的文件")
+            throw failures.first ?? FWError("沒有可以處理的檔案")
         }
         if !clips.isEmpty {
             let text = clips.joined(separator: "\n\n")
@@ -87,11 +87,11 @@ enum Engine {
             detail.append(note)
         } else if !notes.isEmpty, id.hasSuffix("compress") {
             let saved = Int((1 - Double(after) / Double(max(before, 1))) * 100)
-            detail.append("体积 -\(saved)%")
+            detail.append("體積 -\(saved)%")
         } else if !clips.isEmpty {
-            detail.append("文字已复制到剪贴板")
+            detail.append("文字已複製到剪貼簿")
         }
-        if !failures.isEmpty { detail.append("\(failures.count) 个失败：\(failures[0].localizedDescription)") }
+        if !failures.isEmpty { detail.append("\(failures.count) 個失敗：\(failures[0].localizedDescription)") }
         var summary = RunSummary(outputs: outputs, title: title, detail: "")
         if let saved = summary.saved { detail.append("存到「\(saved)」") }
         summary.detail = detail.joined(separator: " · ")
@@ -155,7 +155,7 @@ enum Engine {
 
 enum GenericOps {
     static func zip(_ files: [URL]) async throws -> URL {
-        guard let first = files.first else { throw FWError("没有文件") }
+        guard let first = files.first else { throw FWError("沒有檔案") }
         if files.count == 1 {
             let out = Out.url(for: first, ext: "zip")
             try await Shell.run("/usr/bin/ditto", ["-c", "-k", "--sequesterRsrc", "--keepParent", first.path, out.path])
@@ -163,14 +163,14 @@ enum GenericOps {
         }
         let tmp = try Out.tempDir()
         defer { try? FileManager.default.removeItem(at: tmp) }
-        let bundle = tmp.appendingPathComponent("归档")
+        let bundle = tmp.appendingPathComponent("歸檔")
         try FileManager.default.createDirectory(at: bundle, withIntermediateDirectories: true)
         for file in files {
             let base = file.deletingPathExtension().lastPathComponent
             let target = Out.unique(in: bundle, base: base, ext: file.pathExtension)
             try FileManager.default.copyItem(at: file, to: target)
         }
-        let out = Out.unique(in: Out.dir(for: first), base: "归档 \(files.count) 项", ext: "zip")
+        let out = Out.unique(in: Out.dir(for: first), base: "歸檔 \(files.count) 項", ext: "zip")
         try await Shell.run("/usr/bin/ditto", ["-c", "-k", "--sequesterRsrc", "--keepParent", bundle.path, out.path])
         return out
     }
@@ -183,7 +183,7 @@ enum GenericOps {
             hasher.update(data: chunk)
         }
         let hex = hasher.finalize().map { String(format: "%02x", $0) }.joined()
-        return OpResult(note: "SHA-256 \(hex.prefix(12))… 已复制", clip: hex)
+        return OpResult(note: "SHA-256 \(hex.prefix(12))… 已複製", clip: hex)
     }
 }
 
@@ -192,7 +192,7 @@ final class Runner {
     static let shared = Runner()
 
     func run(_ option: WheelOption, files: [URL], screen: NSScreen?, wanted: Wanted = Wanted()) {
-        let name = files.count == 1 ? files[0].lastPathComponent : "\(files.count) 个文件"
+        let name = files.count == 1 ? files[0].lastPathComponent : "\(files.count) 個檔案"
         let job = BusyHUD.shared.begin("\(name) → \(option.title)")
         let id = option.id, label = option.title
         Log.write("run: \(id) on \(files.count) file(s)")
@@ -212,7 +212,7 @@ final class Runner {
                     SFX.shared.play(evaded ? .evaded : .passed, after: 0.3)
                     if evaded {
                         WantedHUD.shared.evade(wanted, on: screen)
-                        detail = "通缉 " + String(repeating: "★", count: wanted.level) + " 已解除" + (summary.saved.map { " · 存到「\($0)」" } ?? "")
+                        detail = "通緝 " + String(repeating: "★", count: wanted.level) + " 已解除" + (summary.saved.map { " · 存到「\($0)」" } ?? "")
                     }
                     BannerController.shared.show(passed: true, title: summary.title, detail: detail, on: screen)
                 }
@@ -232,6 +232,6 @@ final class Runner {
         SFX.shared.play(Weapon.of(option.id).sound)
         SFX.shared.play(.passed, after: 0.3)
         BannerController.shared.show(passed: true, title: "\(context.headline)  →  \(option.title)",
-                                     detail: "演示模式 · 拖一个真文件再按 ⇧ 试试", on: screen)
+                                     detail: "示範模式 · 拖一個檔案再按 ⇧ 試試", on: screen)
     }
 }

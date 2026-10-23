@@ -46,5 +46,8 @@ for s in 16 32 128 256 512; do
 done
 iconutil -c icns "$ICONSET" -o "$APP/Contents/Resources/AppIcon.icns"
 
+# Cloud-synced workspaces may attach Finder metadata that codesign rejects.
+# This is a fresh build; clear only generated bundle metadata before signing.
+xattr -cr "$APP"
 codesign --force --sign - "$APP" >/dev/null
 echo "Built $APP"

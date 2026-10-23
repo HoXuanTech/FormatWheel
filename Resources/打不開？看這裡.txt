@@ -1,0 +1,11 @@
+格式輪盤 · 安裝說明
+
+1. 把「FormatWheel」拖進旁邊的「Applications（應用程式）」資料夾。
+2. 第一次開啟時，macOS 可能提示「無法驗證開發者」。此版本尚未經 Apple 公證；請先確認下載來源及檔案雜湊值，再決定是否開啟。
+   · macOS 14：在「應用程式」裡右鍵點 FormatWheel →「開啟」→ 再點「開啟」。
+   · macOS 15 及以後：先雙擊一次，然後到「系統設定 → 隱私與安全性」，往下拉，點「仍要開啟」。
+3. 開啟後選單欄會出現一個小輪盤圖示，並自動示範一次。
+4. 用法：在 Finder / 桌面上拖住檔案，拖動時按一下 ⇧ Shift，朝格子方向一甩，鬆開滑鼠。
+
+需要 macOS 14 或更高版本。想解鎖 WebP / AVIF / WebM / MP3 等格式：安裝 Homebrew 後執行  brew install ffmpeg webp
+專案主頁：https://github.com/Elise616/FormatWheel

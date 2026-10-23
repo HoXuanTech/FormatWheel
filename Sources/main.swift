@@ -40,7 +40,7 @@ if let out = flag("--snapshot") {
     let files = paths(after: "--files")
     var wanted = files.first.map(Privacy.image) ?? Wanted()
     if let level = flag("--wanted").flatMap(Int.init) {
-        wanted = Wanted(level: level, reasons: ["GPS 定位", "iPhone 15 Pro", "拍摄时间"])
+        wanted = Wanted(level: level, reasons: ["GPS 定位", "iPhone 15 Pro", "拍攝時間"])
     }
     do {
         try Snapshot.wheel(files: files, hover: hover, page: page, background: flag("--bg").map { URL(fileURLWithPath: $0) },
@@ -56,7 +56,7 @@ if let out = flag("--banner") {
     _ = NSApplication.shared
     do {
         try Snapshot.banner(passed: !arguments.contains("--wasted"), title: flag("--title") ?? "IMG_2049.HEIC  →  JPG",
-                            detail: flag("--detail") ?? "2.4 MB → 1.1 MB · 已保存在原文件旁边",
+                            detail: flag("--detail") ?? "2.4 MB → 1.1 MB · 已儲存在原檔案旁邊",
                             background: flag("--bg").map { URL(fileURLWithPath: $0) }, out: URL(fileURLWithPath: out))
         exit(0)
     } catch {
@@ -123,12 +123,12 @@ if let out = flag("--glyphs") {
     _ = NSApplication.shared
     let sample: [(String, Glyph)] = [
         ("PNG", .png), ("JPG", .jpg), ("HEIC", .heic), ("WEBP", .webp), ("AVIF", .avif), ("GIF", .gif), ("TIFF", .tiff), ("PDF", .pdf),
-        ("长图", .longImage), ("DOCX", .word("DOCX")), ("TXT", .text), ("MD", .markdown), ("RTF", .rtf), ("HTML", .html), ("ODT", .odt), ("MP4", .clapper),
-        ("MOV", .film), ("HEVC", .filmBadge("H.265")), ("WEBM", .webVideo), ("视频GIF", .loop), ("MP3", .note("MP3", Ink.orange)), ("M4A", .note("M4A", Ink.blue)), ("WAV", .waves), ("FLAC", .wavesBadge("FLAC", Ink.gold)),
-        ("OPUS", .voice), ("ALAC", .vinyl), ("铃声", .bell), ("压缩", .compress), ("缩小", .shrink), ("抠图", .cutout), ("识字", .scan), ("黑白", .mono),
-        ("旋转", .rotate), ("去隐私", .unpin), ("加背景", .backdrop), ("拆页", .split), ("合并", .merge), ("静音", .mute), ("720P", .screen720), ("封面", .cover),
-        ("加速", .fast), ("慢放", .slow), ("单声道", .speaker), ("响度", .meter), ("字数", .counter), ("复制全文", .clipboard), ("ZIP", .zip), ("路径", .link),
-        ("文件名", .tag), ("SHA", .fingerprint),
+        ("長圖", .longImage), ("DOCX", .word("DOCX")), ("TXT", .text), ("MD", .markdown), ("RTF", .rtf), ("HTML", .html), ("ODT", .odt), ("MP4", .clapper),
+        ("MOV", .film), ("HEVC", .filmBadge("H.265")), ("WEBM", .webVideo), ("影片GIF", .loop), ("MP3", .note("MP3", Ink.orange)), ("M4A", .note("M4A", Ink.blue)), ("WAV", .waves), ("FLAC", .wavesBadge("FLAC", Ink.gold)),
+        ("OPUS", .voice), ("ALAC", .vinyl), ("鈴聲", .bell), ("壓縮", .compress), ("縮小", .shrink), ("摳圖", .cutout), ("識字", .scan), ("黑白", .mono),
+        ("旋轉", .rotate), ("去隱私", .unpin), ("加背景", .backdrop), ("拆頁", .split), ("合併", .merge), ("靜音", .mute), ("720P", .screen720), ("封面", .cover),
+        ("加速", .fast), ("慢放", .slow), ("單聲道", .speaker), ("響度", .meter), ("字數", .counter), ("複製全文", .clipboard), ("ZIP", .zip), ("路徑", .link),
+        ("檔名", .tag), ("SHA", .fingerprint),
     ]
     final class Sheet: NSView {
         let items: [(String, Glyph)]

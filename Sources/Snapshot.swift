@@ -27,7 +27,7 @@ enum Snapshot {
         content.wanted.phase = 0.1
         if let hover, let option = context.pages[page].slots[safe: hover] ?? nil, option.id.hasSuffix(".strip") {
             content.wanted.evading = true
-            content.wanted.caption = "松手 = 甩掉警察"
+            content.wanted.caption = "鬆手 = 甩掉警察"
         }
         try write(root, to: out)
     }
@@ -52,11 +52,11 @@ enum Snapshot {
         guard let rep = NSBitmapImageRep(bitmapDataPlanes: nil, pixelsWide: Int(size.width * 2), pixelsHigh: Int(size.height * 2),
                                          bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
                                          colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0) else {
-            throw FWError("无法创建画布")
+            throw FWError("無法建立畫布")
         }
         rep.size = size
         view.cacheDisplay(in: view.bounds, to: rep)
-        guard let png = rep.representation(using: .png, properties: [:]) else { throw FWError("PNG 编码失败") }
+        guard let png = rep.representation(using: .png, properties: [:]) else { throw FWError("PNG 編碼失敗") }
         try png.write(to: url)
     }
 

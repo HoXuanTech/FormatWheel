@@ -38,7 +38,7 @@ enum DocOps {
             let types: [String: NSAttributedString.DocumentType] = [
                 "docx": .officeOpenXML, "doc": .docFormat, "rtf": .rtf, "html": .html, "odt": .openDocument,
             ]
-            guard let type = types[fmt] else { throw FWError("不支持写入 \(fmt.uppercased())") }
+            guard let type = types[fmt] else { throw FWError("不支援寫入 \(fmt.uppercased())") }
             let data = try await MainActor.run {
                 try text.data(from: NSRange(location: 0, length: text.length), documentAttributes: [.documentType: type])
             }
@@ -100,7 +100,7 @@ enum DocOps {
         let operation = NSPrintOperation(view: view, printInfo: info)
         operation.showsPrintPanel = false
         operation.showsProgressPanel = false
-        guard operation.run() else { throw FWError("生成 PDF 失败") }
+        guard operation.run() else { throw FWError("生成 PDF 失敗") }
     }
 
     static func plainText(_ url: URL) async throws -> String {
@@ -135,15 +135,15 @@ enum DocOps {
         }
         let total = cjk + words
         var parts = ["共 \(Fmt.count(total)) 字"]
-        if cjk > 0 && words > 0 { parts.append("中文 \(Fmt.count(cjk)) · 英文 \(Fmt.count(words)) 词") }
-        parts.append("\(Fmt.count(cjk + other)) 个字符（不含空格）")
+        if cjk > 0 && words > 0 { parts.append("中文 \(Fmt.count(cjk)) · 英文 \(Fmt.count(words)) 詞") }
+        parts.append("\(Fmt.count(cjk + other)) 個字元（不含空格）")
         return OpResult(note: parts.joined(separator: " · "))
     }
 
     static func copy(_ url: URL) async throws -> OpResult {
         let text = try await plainText(url).trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !text.isEmpty else { throw FWError("文档里没有文字") }
-        return OpResult(note: "已复制 \(Fmt.count(text.count)) 字", clip: text)
+        guard !text.isEmpty else { throw FWError("文件裡沒有文字") }
+        return OpResult(note: "已複製 \(Fmt.count(text.count)) 字", clip: text)
     }
 }
 

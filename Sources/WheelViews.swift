@@ -127,8 +127,8 @@ final class WheelView: NSView {
             guard let option = page.slots[safe: i] ?? nil else { continue }
             let p = Geo.point(c, mid, CGFloat(i) * step)
             cg.saveGState()
-            // The source's own format stays readable ("当前"); missing tools fade further.
-            let isCurrent = option.ammo == "当前"
+            // The source's own format stays readable ("當前"); missing tools fade further.
+            let isCurrent = option.ammo == "當前"
             cg.setAlpha((option.enabled ? 1 : (isCurrent ? 0.72 : 0.38)) * contentFade)
             if Settings.shared.iconStyle == .weapons {
                 // GTA layout: the weapon silhouette, with the format name underneath where the ammo count sits.
@@ -176,7 +176,7 @@ final class WheelView: NSView {
             if option.enabled {
                 detail = option.detail
             } else {
-                detail = option.note ?? "现在用不了"
+                detail = option.note ?? "現在用不了"
                 color = Theme.loss.mixed(with: .white, 0.45)
             }
         }
@@ -269,9 +269,9 @@ final class HelpPanelView: NSView {
     }
 
     var lines: [[Piece]] = [
-        [.text("按"), .key("⇧ Shift"), .text("切换  转换 / 工具")],
-        [.text("朝格子方向拖，"), .key("松开鼠标"), .text("执行")],
-        [.text("移回中心再松开 = 取消")],
+        [.text("按"), .key("⇧ Shift"), .text("切換  轉換 / 工具")],
+        [.text("朝格子方向拖，"), .key("鬆開滑鼠"), .text("執行")],
+        [.text("移回中心再鬆開 = 取消")],
     ]
 
     override var isFlipped: Bool { true }

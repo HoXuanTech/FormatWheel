@@ -6,9 +6,9 @@ enum Crew: String, CaseIterable {
 
     var title: String {
         switch self {
-        case .online: return "线上模式 · 蓝"
-        case .michael: return "麦克 · 天蓝"
-        case .franklin: return "富兰克林 · 绿"
+        case .online: return "線上模式 · 藍"
+        case .michael: return "麥克 · 天藍"
+        case .franklin: return "富蘭克林 · 綠"
         case .trevor: return "崔佛 · 橙"
         }
     }
@@ -48,7 +48,7 @@ enum IconStyle: String, CaseIterable {
 
     var title: String {
         switch self {
-        case .formats: return "格式图标"
+        case .formats: return "格式圖示"
         case .weapons: return "GTA 武器"
         }
     }

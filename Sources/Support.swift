@@ -109,7 +109,7 @@ enum Shell {
 
     static func installHint(_ name: String) -> String {
         let formula = name == "cwebp" ? "webp" : name
-        return "需要先装 \(name)：终端运行 brew install \(formula)"
+        return "需要先裝 \(name)：終端執行 brew install \(formula)"
     }
 
     /// Runs a tool to completion. `onLine` receives stdout line by line (used for ffmpeg progress).
@@ -146,14 +146,14 @@ enum Shell {
                     continuation.resume(returning: buffer.stdout)
                 } else {
                     let tool = URL(fileURLWithPath: executable).lastPathComponent
-                    let last = buffer.stderr.split(whereSeparator: \.isNewline).last.map(String.init) ?? "退出码 \(proc.terminationStatus)"
-                    continuation.resume(throwing: FWError("\(tool) 出错：\(last.prefix(140))"))
+                    let last = buffer.stderr.split(whereSeparator: \.isNewline).last.map(String.init) ?? "退出碼 \(proc.terminationStatus)"
+                    continuation.resume(throwing: FWError("\(tool) 出錯：\(last.prefix(140))"))
                 }
             }
             do {
                 try process.run()
             } catch {
-                continuation.resume(throwing: FWError("无法运行 \(executable)：\(error.localizedDescription)"))
+                continuation.resume(throwing: FWError("無法執行 \(executable)：\(error.localizedDescription)"))
             }
         }
     }

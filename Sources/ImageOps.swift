@@ -17,7 +17,7 @@ enum ImageOps {
     /// Decodes the primary image with its EXIF orientation already applied.
     static func load(_ url: URL) throws -> LoadedImage {
         guard let src = CGImageSourceCreateWithURL(url as CFURL, nil), CGImageSourceGetCount(src) > 0 else {
-            throw FWError("打不开这张图片")
+            throw FWError("打不開這張圖片")
         }
         let index = CGImageSourceGetPrimaryImageIndex(src)
         let props = (CGImageSourceCopyPropertiesAtIndex(src, index, nil) as? [CFString: Any]) ?? [:]
@@ -35,7 +35,7 @@ enum ImageOps {
                 kCGImageSourceShouldCacheImmediately: true,
             ] as CFDictionary)
         }
-        guard let image else { throw FWError("图片解码失败") }
+        guard let image else { throw FWError("圖片解碼失敗") }
         return LoadedImage(cg: image, props: props)
     }
 
@@ -84,10 +84,10 @@ enum ImageOps {
         case "avif": try await writeAVIF(image, to: url, quality: quality ?? 0.62)
         case "pdf": try PDFMaker.write([image], to: url)
         default:
-            guard let type = writers[fmt] else { throw FWError("不支持写入 \(fmt.uppercased())") }
+            guard let type = writers[fmt] else { throw FWError("不支援寫入 \(fmt.uppercased())") }
             let pixels = (fmt == "jpg" || fmt == "bmp") ? flatten(image) : image
             guard let dest = CGImageDestinationCreateWithURL(url as CFURL, type.identifier as CFString, 1, nil) else {
-                throw FWError("无法创建 \(fmt.uppercased()) 文件")
+                throw FWError("無法建立 \(fmt.uppercased()) 檔案")
             }
             var p = props
             if let quality { p[kCGImageDestinationLossyCompressionQuality] = quality }
@@ -97,7 +97,7 @@ enum ImageOps {
                 p[kCGImagePropertyTIFFDictionary] = tiff
             }
             CGImageDestinationAddImage(dest, pixels, p as CFDictionary)
-            guard CGImageDestinationFinalize(dest) else { throw FWError("写入 \(fmt.uppercased()) 失败") }
+            guard CGImageDestinationFinalize(dest) else { throw FWError("寫入 \(fmt.uppercased()) 失敗") }
         }
     }
 
@@ -213,7 +213,7 @@ enum ImageOps {
                 if longSide > 1600 { image = resized(image, scale: 1600 / Double(longSide)) }
             }
         }
-        let out = Out.url(for: url, suffix: "压缩", ext: fmt)
+        let out = Out.url(for: url, suffix: "壓縮", ext: fmt)
         try await write(image, to: out, fmt: fmt, quality: quality)
         return try shrinkResult(source: url, output: out)
     }
@@ -222,16 +222,16 @@ enum ImageOps {
         let before = Fmt.size(of: source), after = Fmt.size(of: output)
         guard after < before else {
             try? FileManager.default.removeItem(at: output)
-            throw FWError("已经很小了，压不动了")
+            throw FWError("已經很小了，壓不動了")
         }
         let saved = Int((1 - Double(after) / Double(max(before, 1))) * 100)
-        return OpResult(outputs: [output], note: "体积 -\(saved)%")
+        return OpResult(outputs: [output], note: "體積 -\(saved)%")
     }
 
     static func half(_ url: URL) async throws -> OpResult {
         let image = try load(url)
         let fmt = sameFormat(url)
-        let out = Out.url(for: url, suffix: "缩小", ext: fmt)
+        let out = Out.url(for: url, suffix: "縮小", ext: fmt)
         let small = resized(image.cg, scale: 0.5)
         try await write(small, to: out, fmt: fmt, quality: lossyQuality(fmt), props: carryOver(image.props))
         return OpResult(outputs: [out], note: "\(small.width)×\(small.height)")
@@ -243,12 +243,12 @@ enum ImageOps {
         let handler = VNImageRequestHandler(cgImage: image.cg, options: [:])
         try handler.perform([request])
         guard let observation = request.results?.first, !observation.allInstances.isEmpty else {
-            throw FWError("没找到能抠出来的主体")
+            throw FWError("沒找到能摳出來的主體")
         }
         let buffer = try observation.generateMaskedImage(ofInstances: observation.allInstances, from: handler, croppedToInstancesExtent: false)
         let ci = CIImage(cvPixelBuffer: buffer)
-        guard let masked = CIContext().createCGImage(ci, from: ci.extent) else { throw FWError("抠图失败") }
-        let out = Out.url(for: url, suffix: "抠图", ext: "png")
+        guard let masked = CIContext().createCGImage(ci, from: ci.extent) else { throw FWError("摳圖失敗") }
+        let out = Out.url(for: url, suffix: "摳圖", ext: "png")
         try await write(masked, to: out, fmt: "png")
         return OpResult(outputs: [out], note: "背景已去掉")
     }
@@ -257,7 +257,7 @@ enum ImageOps {
         let request = VNRecognizeTextRequest()
         request.recognitionLevel = .accurate
         request.usesLanguageCorrection = true
-        let wanted = ["zh-Hans", "zh-Hant", "en-US"]
+        let wanted = ["zh-Hant", "en-US", "zh-Hans"]
         let supported = (try? request.supportedRecognitionLanguages()) ?? wanted
         request.recognitionLanguages = wanted.filter(supported.contains)
         try VNImageRequestHandler(cgImage: image, options: [:]).perform([request])
@@ -266,17 +266,17 @@ enum ImageOps {
 
     static func ocr(_ url: URL) async throws -> OpResult {
         let text = try recognizeText(load(url).cg).trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !text.isEmpty else { throw FWError("图里没认出文字") }
+        guard !text.isEmpty else { throw FWError("圖裡沒認出文字") }
         let out = Out.url(for: url, suffix: "文字", ext: "txt")
         try text.write(to: out, atomically: true, encoding: .utf8)
-        return OpResult(outputs: [out], note: "认出 \(Fmt.count(text.count)) 字，已复制", clip: text)
+        return OpResult(outputs: [out], note: "認出 \(Fmt.count(text.count)) 字，已複製", clip: text)
     }
 
     static func mono(_ url: URL) async throws -> OpResult {
         let image = try load(url)
         let ci = CIImage(cgImage: image.cg)
         guard let filtered = CIFilter(name: "CIPhotoEffectMono", parameters: [kCIInputImageKey: ci])?.outputImage,
-              let gray = CIContext().createCGImage(filtered, from: ci.extent) else { throw FWError("处理失败") }
+              let gray = CIContext().createCGImage(filtered, from: ci.extent) else { throw FWError("處理失敗") }
         let fmt = sameFormat(url)
         let out = Out.url(for: url, suffix: "黑白", ext: fmt)
         try await write(gray, to: out, fmt: fmt, quality: lossyQuality(fmt), props: carryOver(image.props))
@@ -286,7 +286,7 @@ enum ImageOps {
     static func rotate(_ url: URL) async throws -> OpResult {
         let image = try load(url)
         let fmt = sameFormat(url)
-        let out = Out.url(for: url, suffix: "旋转", ext: fmt)
+        let out = Out.url(for: url, suffix: "旋轉", ext: fmt)
         try await write(rotated(image.cg), to: out, fmt: fmt, quality: fmt == "jpg" ? 0.95 : lossyQuality(fmt), props: carryOver(image.props))
         return OpResult(outputs: [out])
     }
@@ -296,7 +296,7 @@ enum ImageOps {
         let note = Privacy.evadedNote
         if let src = CGImageSourceCreateWithURL(url as CFURL, nil), let type = CGImageSourceGetType(src),
            [UTType.jpeg.identifier, UTType.png.identifier, UTType.tiff.identifier].contains(type as String) {
-            let out = Out.url(for: url, suffix: "去隐私", ext: url.pathExtension.lowercased())
+            let out = Out.url(for: url, suffix: "去隱私", ext: url.pathExtension.lowercased())
             let index = CGImageSourceGetPrimaryImageIndex(src)
             let props = (CGImageSourceCopyPropertiesAtIndex(src, index, nil) as? [CFString: Any]) ?? [:]
             let metadata = CGImageMetadataCreateMutable()
@@ -318,7 +318,7 @@ enum ImageOps {
         }
         let image = try load(url)
         let fmt = sameFormat(url)
-        let out = Out.url(for: url, suffix: "去隐私", ext: fmt)
+        let out = Out.url(for: url, suffix: "去隱私", ext: fmt)
         try await write(image.cg, to: out, fmt: fmt, quality: fmt == "jpg" ? 0.95 : lossyQuality(fmt), props: [kCGImagePropertyOrientation: 1])
         return OpResult(outputs: [out], note: note)
     }
@@ -333,7 +333,7 @@ enum ImageOps {
         let width = Int(w + pad * 2), height = Int(h + pad * 2)
         let srgb = CGColorSpace(name: CGColorSpace.sRGB)!
         guard let ctx = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: 0,
-                                  space: srgb, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { throw FWError("画布创建失败") }
+                                  space: srgb, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { throw FWError("畫布建立失敗") }
         let colors = [
             CGColor(srgbRed: 0.98, green: 0.35, blue: 0.50, alpha: 1),
             CGColor(srgbRed: 0.99, green: 0.55, blue: 0.36, alpha: 1),
@@ -357,7 +357,7 @@ enum ImageOps {
         ctx.draw(image, in: rect)
         ctx.restoreGState()
 
-        guard let framed = ctx.makeImage() else { throw FWError("合成失败") }
+        guard let framed = ctx.makeImage() else { throw FWError("合成失敗") }
         let out = Out.url(for: url, suffix: "加背景", ext: "png")
         try await write(framed, to: out, fmt: "png")
         return OpResult(outputs: [out])
@@ -367,8 +367,8 @@ enum ImageOps {
 /// Builds PDFs from images. Opaque images are embedded as JPEG so the PDF stays small.
 enum PDFMaker {
     static func write(_ images: [CGImage], to url: URL) throws {
-        guard let ctx = CGContext(url as CFURL, mediaBox: nil, [kCGPDFContextCreator: "格式轮盘"] as CFDictionary) else {
-            throw FWError("无法创建 PDF")
+        guard let ctx = CGContext(url as CFURL, mediaBox: nil, [kCGPDFContextCreator: "格式輪盤"] as CFDictionary) else {
+            throw FWError("無法建立 PDF")
         }
         for image in images {
             let w = CGFloat(image.width), h = CGFloat(image.height)
