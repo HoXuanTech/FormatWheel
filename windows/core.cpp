@@ -198,6 +198,20 @@ std::wstring document_convert(const std::wstring& input, const std::wstring& tar
     return output;
 }
 
+std::wstring document_text(const std::wstring& input) {
+    const std::wstring ext = extension(input);
+    if (ext == L"txt" || ext == L"text" || ext == L"md" || ext == L"markdown") return read_text(input);
+    const std::wstring converted = document_convert(input, L"txt");
+    try {
+        const std::wstring value = read_text(converted);
+        DeleteFileW(converted.c_str());
+        return value;
+    } catch (...) {
+        DeleteFileW(converted.c_str());
+        throw;
+    }
+}
+
 std::wstring sha256(const std::wstring& path) {
     HANDLE file = CreateFileW(path.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, nullptr);
     if (file == INVALID_HANDLE_VALUE) throw std::runtime_error("cannot open file");
@@ -338,6 +352,7 @@ std::wstring unavailable_reason(const std::wstring& id) {
     if (id == L"pdf.split") return tool_available(L"pdfseparate.exe") ? L"" : L"尚未安裝 Poppler";
     if (id == L"pdf.merge") return tool_available(L"pdfunite.exe") ? L"" : L"尚未安裝 Poppler";
     if (id == L"doc.count" || id == L"doc.copy") return L"";
+    if (id == L"doc.to.md") return L"Windows 版尚未完成 Markdown 格式保留";
     if (id.find(L"doc.to.") == 0) return tool_available(L"soffice.exe") ? L"" : L"尚未安裝 LibreOffice";
     return L"Windows 版尚未完成這項功能";
 }
@@ -413,13 +428,18 @@ std::wstring run(const std::wstring& id, const std::vector<std::wstring>& files)
     }
     if (id == L"gen.sha") { copy_clipboard(sha256(input)); return L"SHA-256 已複製到剪貼簿"; }
     if (id == L"doc.count" || id == L"doc.copy") {
-        const std::wstring ext = extension(input);
-        if (ext != L"txt" && ext != L"text" && ext != L"md" && ext != L"markdown") throw std::runtime_error("document text extraction needs LibreOffice");
-        const std::wstring value = read_text(input);
+        const std::wstring value = document_text(input);
         if (id == L"doc.copy") { copy_clipboard(value); return L"全文已複製到剪貼簿"; }
-        size_t count = 0;
-        for (wchar_t character : value) if (!std::iswspace(character)) ++count;
-        return L"共 " + std::to_wstring(count) + L" 個非空白字元";
+        size_t cjk = 0, words = 0, characters = 0;
+        bool in_word = false;
+        for (wchar_t character : value) {
+            const bool chinese = (character >= 0x3400 && character <= 0x9fff) || (character >= 0xf900 && character <= 0xfaff);
+            if (!std::iswspace(character)) ++characters;
+            if (chinese) { ++cjk; in_word = false; }
+            else if (std::iswalnum(character)) { if (!in_word) ++words; in_word = true; }
+            else in_word = false;
+        }
+        return L"共 " + std::to_wstring(cjk + words) + L" 字（中文 " + std::to_wstring(cjk) + L" 字、其他 " + std::to_wstring(words) + L" 詞；不含空白字元 " + std::to_wstring(characters) + L"）";
     }
     if (id.find(L"doc.to.") == 0) return document_convert(input, id.substr(7));
     if (id == L"gen.zip") {

@@ -32,3 +32,9 @@ jobs:
           $result = Start-Process -FilePath (Join-Path $PWD "windows/build/Release/FormatWheel.exe") -ArgumentList "--run img.to.jpg `"$inputFile`"" -Wait -PassThru
           if ($result.ExitCode -ne 0) { throw "Image conversion failed with code $($result.ExitCode)" }
           if (-not (Test-Path (Join-Path $PWD "windows/build/sample.jpg"))) { throw "JPEG was not created" }
+      - name: Save Windows test executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: FormatWheel-Windows10-development
+          path: windows/build/Release/FormatWheel.exe
+          if-no-files-found: error
