@@ -39,6 +39,7 @@ struct State {
     bool busy = false;
     bool overlay = false;
     bool was_shift = false;
+    DWORD released_at = 0;
     std::wstring message = L"選擇檔案，或把檔案拖到此視窗";
     HFONT font = nullptr;
     HFONT bold = nullptr;
@@ -245,6 +246,10 @@ public:
                 const auto slots = fw::actions(fw::kind_of(state.files.front()), state.page);
                 if (selected < static_cast<int>(slots.size())) start_action(window, slots[selected].id);
             }
+            if (state.overlay) {
+                state.overlay = false;
+                SetWindowPos(window, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+            }
         }
         ReleaseStgMedium(&storage);
         accepts = false;
@@ -261,13 +266,16 @@ void update_overlay(HWND hwnd) {
             GetCursorPos(&cursor);
             SetWindowPos(hwnd, HWND_TOPMOST, cursor.x - width / 2, cursor.y - center_y, width, height + 40, SWP_SHOWWINDOW);
             state.overlay = true;
+            state.released_at = 0;
         } else {
             state.page = 1 - state.page;
             InvalidateRect(hwnd, nullptr, FALSE);
         }
     }
     state.was_shift = shift;
-    if (!mouse && state.overlay && state.files.empty()) {
+    if (mouse) state.released_at = 0;
+    else if (!state.released_at) state.released_at = GetTickCount();
+    if (!mouse && state.overlay && GetTickCount() - state.released_at > 300) {
         state.overlay = false;
         SetWindowPos(hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
     }
