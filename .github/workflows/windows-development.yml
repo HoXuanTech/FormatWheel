@@ -20,3 +20,15 @@ jobs:
           $exe = "windows/build/Release/FormatWheel.exe"
           if (-not (Test-Path $exe)) { throw "Windows executable was not created" }
           Write-Output "Built: $exe"
+      - name: Convert a PNG to JPEG with Windows Imaging Component
+        shell: pwsh
+        run: |
+          Add-Type -AssemblyName System.Drawing
+          $inputFile = Join-Path $PWD "windows/build/sample.png"
+          $bitmap = [System.Drawing.Bitmap]::new(2, 2)
+          $bitmap.SetPixel(0, 0, [System.Drawing.Color]::Red)
+          $bitmap.Save($inputFile, [System.Drawing.Imaging.ImageFormat]::Png)
+          $bitmap.Dispose()
+          & "windows/build/Release/FormatWheel.exe" --run img.to.jpg $inputFile
+          if ($LASTEXITCODE -ne 0) { throw "Image conversion failed with code $LASTEXITCODE" }
+          if (-not (Test-Path (Join-Path $PWD "windows/build/sample.jpg"))) { throw "JPEG was not created" }
