@@ -11,7 +11,10 @@
 #include <bcrypt.h>
 #include <algorithm>
 #include <cstring>
+#include <cwchar>
 #include <cwctype>
+#include <filesystem>
+#include <memory>
 #include <stdexcept>
 #include <vector>
 
@@ -64,6 +67,11 @@ std::wstring executable_path(const std::wstring& name) {
     GetModuleFileNameW(nullptr, module, MAX_PATH);
     const std::wstring local = std::wstring(module).substr(0, std::wstring(module).find_last_of(L"\\/")) + L"\\" + name;
     if (GetFileAttributesW(local.c_str()) != INVALID_FILE_ATTRIBUTES) return local;
+    if (name == L"soffice.exe") {
+        for (const auto* folder : {L"C:\\Program Files\\LibreOffice\\program\\soffice.exe", L"C:\\Program Files (x86)\\LibreOffice\\program\\soffice.exe"}) {
+            if (GetFileAttributesW(folder) != INVALID_FILE_ATTRIBUTES) return folder;
+        }
+    }
     wchar_t found[MAX_PATH] = {};
     if (SearchPathW(nullptr, name.c_str(), nullptr, MAX_PATH, found, nullptr)) return found;
     return L"";
@@ -120,6 +128,74 @@ void copy_clipboard(const std::wstring& value) {
     GlobalUnlock(memory);
     if (!SetClipboardData(CF_UNICODETEXT, memory)) { GlobalFree(memory); CloseClipboard(); throw std::runtime_error("clipboard write failed"); }
     CloseClipboard();
+}
+
+std::wstring read_text(const std::wstring& path) {
+    HANDLE handle = CreateFileW(path.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (handle == INVALID_HANDLE_VALUE) throw std::runtime_error("cannot read document");
+    LARGE_INTEGER size = {};
+    if (!GetFileSizeEx(handle, &size) || size.QuadPart < 0 || size.QuadPart > 32 * 1024 * 1024) {
+        CloseHandle(handle);
+        throw std::runtime_error("document is too large");
+    }
+    std::vector<char> bytes(static_cast<size_t>(size.QuadPart));
+    DWORD read = 0;
+    const bool okay = bytes.empty() || (ReadFile(handle, bytes.data(), static_cast<DWORD>(bytes.size()), &read, nullptr) && read == bytes.size());
+    CloseHandle(handle);
+    if (!okay) throw std::runtime_error("cannot read document");
+    if (bytes.size() >= 2 && static_cast<unsigned char>(bytes[0]) == 0xff && static_cast<unsigned char>(bytes[1]) == 0xfe) {
+        std::wstring result;
+        for (size_t i = 2; i + 1 < bytes.size(); i += 2) result += static_cast<wchar_t>(static_cast<unsigned char>(bytes[i]) | (static_cast<unsigned char>(bytes[i + 1]) << 8));
+        return result;
+    }
+    const size_t start = bytes.size() >= 3 && static_cast<unsigned char>(bytes[0]) == 0xef && static_cast<unsigned char>(bytes[1]) == 0xbb && static_cast<unsigned char>(bytes[2]) == 0xbf ? 3 : 0;
+    if (start == bytes.size()) return L"";
+    const int count = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, bytes.data() + start, static_cast<int>(bytes.size() - start), nullptr, 0);
+    if (!count) throw std::runtime_error("document is not UTF-8");
+    std::wstring result(count, L'\0');
+    MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, bytes.data() + start, static_cast<int>(bytes.size() - start), &result[0], count);
+    return result;
+}
+
+void write_text(const std::wstring& path, const std::wstring& value) {
+    const int count = WideCharToMultiByte(CP_UTF8, 0, value.c_str(), static_cast<int>(value.size()), nullptr, 0, nullptr, nullptr);
+    if (!count && !value.empty()) throw std::runtime_error("UTF-8 encoding failed");
+    std::vector<char> bytes(count);
+    if (count) WideCharToMultiByte(CP_UTF8, 0, value.c_str(), static_cast<int>(value.size()), bytes.data(), count, nullptr, nullptr);
+    HANDLE handle = CreateFileW(path.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (handle == INVALID_HANDLE_VALUE) throw std::runtime_error("cannot write document");
+    DWORD written = 0;
+    const bool okay = bytes.empty() || (WriteFile(handle, bytes.data(), static_cast<DWORD>(bytes.size()), &written, nullptr) && written == bytes.size());
+    CloseHandle(handle);
+    if (!okay) { DeleteFileW(path.c_str()); throw std::runtime_error("cannot write document"); }
+}
+
+std::wstring temp_folder() {
+    wchar_t temp[MAX_PATH] = {};
+    wchar_t name[MAX_PATH] = {};
+    if (!GetTempPathW(MAX_PATH, temp) || !GetTempFileNameW(temp, L"FW", 0, name)) throw std::runtime_error("cannot create temporary path");
+    DeleteFileW(name);
+    if (!CreateDirectoryW(name, nullptr)) throw std::runtime_error("cannot create temporary folder");
+    return name;
+}
+
+std::wstring document_convert(const std::wstring& input, const std::wstring& target) {
+    const std::wstring folder = temp_folder();
+    struct Cleanup {
+        std::wstring path;
+        ~Cleanup() { std::error_code ignored; std::filesystem::remove_all(path, ignored); }
+    } cleanup{folder};
+    const std::wstring target_spec = target == L"txt" ? L"txt:Text (encoded):UTF8" : target;
+    std::wstring profile = folder + L"\\profile";
+    std::replace(profile.begin(), profile.end(), L'\\', L'/');
+    size_t space = 0;
+    while ((space = profile.find(L' ', space)) != std::wstring::npos) { profile.replace(space, 1, L"%20"); space += 3; }
+    run_tool(L"soffice.exe", {L"-env:UserInstallation=file:///" + profile, L"--headless", L"--convert-to", target_spec, L"--outdir", folder, input});
+    const std::wstring converted = folder + L"\\" + filename(stem(input)) + L"." + target;
+    if (GetFileAttributesW(converted.c_str()) == INVALID_FILE_ATTRIBUTES) throw std::runtime_error("LibreOffice did not create an output file");
+    const std::wstring output = unique_out(input, L"", target);
+    if (!MoveFileW(converted.c_str(), output.c_str())) throw std::runtime_error("cannot move converted document");
+    return output;
 }
 
 std::wstring sha256(const std::wstring& path) {
@@ -261,6 +337,8 @@ std::wstring unavailable_reason(const std::wstring& id) {
     if (id == L"pdf.to.txt") return tool_available(L"pdftotext.exe") ? L"" : L"尚未安裝 Poppler";
     if (id == L"pdf.split") return tool_available(L"pdfseparate.exe") ? L"" : L"尚未安裝 Poppler";
     if (id == L"pdf.merge") return tool_available(L"pdfunite.exe") ? L"" : L"尚未安裝 Poppler";
+    if (id == L"doc.count" || id == L"doc.copy") return L"";
+    if (id.find(L"doc.to.") == 0) return tool_available(L"soffice.exe") ? L"" : L"尚未安裝 LibreOffice";
     return L"Windows 版尚未完成這項功能";
 }
 
@@ -334,6 +412,16 @@ std::wstring run(const std::wstring& id, const std::vector<std::wstring>& files)
         return L"已複製到剪貼簿";
     }
     if (id == L"gen.sha") { copy_clipboard(sha256(input)); return L"SHA-256 已複製到剪貼簿"; }
+    if (id == L"doc.count" || id == L"doc.copy") {
+        const std::wstring ext = extension(input);
+        if (ext != L"txt" && ext != L"text" && ext != L"md" && ext != L"markdown") throw std::runtime_error("document text extraction needs LibreOffice");
+        const std::wstring value = read_text(input);
+        if (id == L"doc.copy") { copy_clipboard(value); return L"全文已複製到剪貼簿"; }
+        size_t count = 0;
+        for (wchar_t character : value) if (!std::iswspace(character)) ++count;
+        return L"共 " + std::to_wstring(count) + L" 個非空白字元";
+    }
+    if (id.find(L"doc.to.") == 0) return document_convert(input, id.substr(7));
     if (id == L"gen.zip") {
         if (!tool_available(L"7z.exe")) throw std::runtime_error("7-Zip missing");
         const std::wstring out = unique_out(input, L" 封存", L"zip");

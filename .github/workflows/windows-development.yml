@@ -29,6 +29,6 @@ jobs:
           $bitmap.SetPixel(0, 0, [System.Drawing.Color]::Red)
           $bitmap.Save($inputFile, [System.Drawing.Imaging.ImageFormat]::Png)
           $bitmap.Dispose()
-          & "windows/build/Release/FormatWheel.exe" --run img.to.jpg $inputFile
-          if ($LASTEXITCODE -ne 0) { throw "Image conversion failed with code $LASTEXITCODE" }
+          $result = Start-Process -FilePath (Join-Path $PWD "windows/build/Release/FormatWheel.exe") -ArgumentList "--run img.to.jpg `"$inputFile`"" -Wait -PassThru
+          if ($result.ExitCode -ne 0) { throw "Image conversion failed with code $($result.ExitCode)" }
           if (-not (Test-Path (Join-Path $PWD "windows/build/sample.jpg"))) { throw "JPEG was not created" }
