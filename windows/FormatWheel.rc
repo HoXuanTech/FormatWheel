@@ -1,0 +1,31 @@
+#include <windows.h>
+#pragma code_page(65001)
+
+101 ICON "FormatWheel.ico"
+
+1 VERSIONINFO
+FILEVERSION 0,1,0,0
+PRODUCTVERSION 0,1,0,0
+FILEFLAGSMASK 0x3fL
+FILEFLAGS 0x0L
+FILEOS VOS_NT_WINDOWS32
+FILETYPE VFT_APP
+FILESUBTYPE 0x0L
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040404B0"
+    BEGIN
+      VALUE "CompanyName", "HoXuanTech\0"
+      VALUE "FileDescription", "格式輪盤 Windows 測試版\0"
+      VALUE "FileVersion", "0.1.0\0"
+      VALUE "OriginalFilename", "FormatWheel.exe\0"
+      VALUE "ProductName", "FormatWheel 格式輪盤\0"
+      VALUE "ProductVersion", "0.1.0\0"
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x0404, 1200
+  END
+END

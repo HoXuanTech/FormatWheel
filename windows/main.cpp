@@ -361,7 +361,7 @@ int WINAPI wWinMain(HINSTANCE instance, HINSTANCE, PWSTR, int show) {
     klass.hInstance = instance;
     klass.lpszClassName = L"FormatWheelWin8";
     klass.hCursor = LoadCursorW(nullptr, IDC_ARROW);
-    klass.hIcon = LoadIconW(nullptr, IDI_APPLICATION);
+    klass.hIcon = LoadIconW(instance, MAKEINTRESOURCEW(101));
     RegisterClassW(&klass);
     HWND hwnd = CreateWindowExW(0, klass.lpszClassName, L"格式輪盤 FormatWheel", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
                                 CW_USEDEFAULT, CW_USEDEFAULT, width, height + 40, nullptr, nullptr, instance, nullptr);
