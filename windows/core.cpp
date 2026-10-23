@@ -72,8 +72,26 @@ std::wstring executable_path(const std::wstring& name) {
             if (GetFileAttributesW(folder) != INVALID_FILE_ATTRIBUTES) return folder;
         }
     }
-    wchar_t found[MAX_PATH] = {};
-    if (SearchPathW(nullptr, name.c_str(), nullptr, MAX_PATH, found, nullptr)) return found;
+    const DWORD length = GetEnvironmentVariableW(L"PATH", nullptr, 0);
+    if (length) {
+        std::vector<wchar_t> buffer(length + 1, 0);
+        if (GetEnvironmentVariableW(L"PATH", buffer.data(), static_cast<DWORD>(buffer.size()))) {
+            const std::wstring entries(buffer.data());
+            size_t start = 0;
+            while (start < entries.size()) {
+                const size_t end = entries.find(L';', start);
+                std::wstring directory = entries.substr(start, end == std::wstring::npos ? std::wstring::npos : end - start);
+                if (directory.size() >= 2 && directory.front() == L'"' && directory.back() == L'"') directory = directory.substr(1, directory.size() - 2);
+                if (directory.size() >= 3 && directory[1] == L':' && (directory[2] == L'\\' || directory[2] == L'/')) {
+                    const std::wstring candidate = directory + L"\\" + name;
+                    const DWORD attributes = GetFileAttributesW(candidate.c_str());
+                    if (attributes != INVALID_FILE_ATTRIBUTES && !(attributes & FILE_ATTRIBUTE_DIRECTORY)) return candidate;
+                }
+                if (end == std::wstring::npos) break;
+                start = end + 1;
+            }
+        }
+    }
     return L"";
 }
 
